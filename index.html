@@ -145,8 +145,10 @@ ul{list-style:none;}
 .mobile-search-icon{display:none;}
 .cart-badge{position:absolute;top:4px;right:4px;background:var(--jersey-red);color:var(--white);width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .nav-mobile-toggle{display:none;background:none;font-size:22px;padding:8px;cursor:pointer;}
-.nav-mobile{display:none;background:var(--white);border-top:1px solid var(--gray-200);padding:16px 20px;}
+.nav-mobile{display:block;max-height:0;overflow:hidden;background:var(--white);border-top:1px solid var(--gray-200);padding:0 20px;transition:max-height 0.3s ease,padding 0.3s ease;}
+.nav-mobile:not(.hidden){max-height:80vh;overflow-y:auto;padding:16px 20px;}
 .nav-mobile a{display:block;padding:12px 0;font-size:15px;font-weight:500;border-bottom:1px solid var(--gray-100);}
+.nav-mobile a.admin-link{color:var(--market-orange);font-weight:700;}
 #navbar.scrolled .nav-main{box-shadow:var(--shadow);}
 
 /* ===== CATEGORY STRIP ===== */
@@ -453,6 +455,7 @@ footer{background:var(--black);padding:64px 0 0;}
 .admin-nav-label{font-size:10px;color:var(--gray-400);letter-spacing:2px;text-transform:uppercase;padding:12px 0 8px;}
 .admin-nav a{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius);font-size:14px;color:rgba(255,255,255,0.7);transition:var(--transition);margin-bottom:2px;}
 .admin-nav a:hover,.admin-nav a.active{background:rgba(255,255,255,0.1);color:var(--white);}
+.admin-nav-badge{margin-left:auto;background:var(--jersey-red);color:var(--white);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;}
 .admin-main{margin-left:260px;padding:0;min-height:100vh;background:var(--gray-100);}
 .admin-topbar{background:var(--white);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);position:sticky;top:0;z-index:9;}
 .admin-topbar h2{font-family:var(--font-display);font-size:24px;letter-spacing:1px;}
@@ -649,8 +652,13 @@ tr:hover td{background:var(--gray-100);}
       <a href="#" onclick="showPage('shop');toggleMobileNav()">Shop All</a>
       <a href="#" onclick="showPage('jerseys');toggleMobileNav()">Peterson Jersey</a>
       <a href="#" onclick="showPage('palmoil');toggleMobileNav()">Peterson Palm Oil</a>
+      <a href="#" onclick="scrollToFlashSale();toggleMobileNav()">🔥 Flash Sales</a>
       <a href="#" onclick="showPage('about');toggleMobileNav()">About Us</a>
+      <a href="#" onclick="showPage('delivery');toggleMobileNav()">Track Order</a>
+      <a href="#" onclick="showPage('contact');toggleMobileNav()">Contact</a>
+      <a href="#" onclick="toggleCart();toggleMobileNav()">🛒 Cart</a>
       <a href="#" onclick="handleAuthNav();toggleMobileNav()" id="mobile-auth-link">My Account</a>
+      <a href="#" onclick="showPage('admin');toggleMobileNav()" id="mobile-admin-link" class="admin-link hidden">🔧 Admin Panel</a>
     </div>
   </div>
   <div class="category-strip">
@@ -782,6 +790,13 @@ tr:hover td{background:var(--gray-100);}
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- DYNAMIC BANNERS (from Admin Panel) -->
+  <section class="section hidden" id="dynamic-banners-section" style="padding-top:0;">
+    <div class="container">
+      <div class="scroll-row" id="dynamic-banners-row"></div>
     </div>
   </section>
 
@@ -1105,7 +1120,7 @@ tr:hover td{background:var(--gray-100);}
 
         <div class="checkout-section">
           <h3>PAYMENT METHOD</h3>
-          <div class="payment-methods">
+          <div class="payment-methods" id="payment-methods-grid">
             <div class="payment-method selected" id="pay-cod" onclick="selectPayment('cod')">
               <div class="method-icon">💰</div>
               <h5>Pay On Delivery</h5>
@@ -1115,6 +1130,11 @@ tr:hover td{background:var(--gray-100);}
               <div class="method-icon">🏦</div>
               <h5>Bank Transfer</h5>
               <p>Transfer to our account</p>
+            </div>
+            <div class="payment-method hidden" id="pay-card" onclick="selectPayment('card')">
+              <div class="method-icon">💳</div>
+              <h5>Pay with Card</h5>
+              <p>Secure payment via Paystack</p>
             </div>
           </div>
           <div id="bank-transfer-info" style="display:none;"></div>
@@ -1334,24 +1354,32 @@ tr:hover td{background:var(--gray-100);}
         <div class="admin-nav-section">
           <div class="admin-nav-label">Overview</div>
           <a href="#" onclick="adminTab('overview')" id="admin-tab-overview" class="active">📊 Dashboard</a>
+          <a href="#" onclick="adminTab('analytics')" id="admin-tab-analytics">📈 Analytics</a>
         </div>
         <div class="admin-nav-section">
-          <div class="admin-nav-label">Products</div>
+          <div class="admin-nav-label">Catalog</div>
           <a href="#" onclick="adminTab('products')" id="admin-tab-products">📦 All Products</a>
           <a href="#" onclick="adminTab('add-product')" id="admin-tab-add-product">➕ Add Product</a>
+          <a href="#" onclick="adminTab('bulk-import')" id="admin-tab-bulk-import">📄 Bulk Import</a>
+          <a href="#" onclick="adminTab('banners')" id="admin-tab-banners">🖼️ Banners</a>
         </div>
         <div class="admin-nav-section">
-          <div class="admin-nav-label">Orders</div>
+          <div class="admin-nav-label">Sales</div>
           <a href="#" onclick="adminTab('orders')" id="admin-tab-orders">🛒 All Orders</a>
+          <a href="#" onclick="adminTab('coupons')" id="admin-tab-coupons">🏷️ Coupons</a>
+          <a href="#" onclick="adminTab('reviews')" id="admin-tab-reviews">⭐ Reviews</a>
         </div>
         <div class="admin-nav-section">
-          <div class="admin-nav-label">Customers</div>
-          <a href="#" onclick="adminTab('customers')" id="admin-tab-customers">👥 Customers</a>
+          <div class="admin-nav-label">People</div>
+          <a href="#" onclick="adminTab('customers')" id="admin-tab-customers">👥 Users</a>
+          <a href="#" onclick="adminTab('chats')" id="admin-tab-chats">💬 Chats</a>
+          <a href="#" onclick="adminTab('manage-admins')" id="admin-tab-manage-admins">🛡️ Manage Admins</a>
+          <a href="#" onclick="adminTab('reset-requests')" id="admin-tab-reset-requests">🔑 Reset Requests<span class="admin-nav-badge hidden" id="reset-req-badge">0</span></a>
         </div>
         <div class="admin-nav-section">
           <div class="admin-nav-label">Settings</div>
           <a href="#" onclick="adminTab('payment-settings')" id="admin-tab-payment-settings">💳 Payment Settings</a>
-          <a href="#" onclick="adminTab('coupons')" id="admin-tab-coupons">🏷️ Coupons</a>
+          <a href="#" onclick="adminTab('paystack-settings')" id="admin-tab-paystack-settings">💳 Paystack Settings</a>
         </div>
         <div class="admin-nav-section" style="margin-top:20px;">
           <a href="#" onclick="showPage('home')" style="color:rgba(255,255,255,0.4);">&larr; Back to Store</a>
@@ -1391,6 +1419,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 const ADMIN_EMAIL = 'olakunlep62@gmail.com';
 let currentUser = null;
@@ -1490,7 +1519,7 @@ function toggleCart(){
 function createProductCard(p){
   const disc=p.oldPrice?Math.round((1-p.price/p.oldPrice)*100):0;
   return `<div class="product-card" onclick="showProductDetail('${p.id}')">
-    <div class="product-card-img-placeholder">${p.emoji}</div>
+    ${p.imageUrl?`<img class="product-card-img" src="${p.imageUrl}" alt="${p.name}">`:`<div class="product-card-img-placeholder">${p.emoji}</div>`}
     ${disc?`<div class="product-badge"><span class="badge badge-red">-${disc}%</span></div>`:''}
     ${p.featured?`<div style="position:absolute;top:12px;right:12px;"><span class="badge badge-gold">⭐ Best</span></div>`:''}
     <div class="product-card-body">
@@ -1580,7 +1609,9 @@ function showProductDetail(id){
     <a href="#" onclick="showPage('home')">Home</a> &rsaquo;
     <a href="#" onclick="showPage(${p.cat==='jersey'?"'jerseys'":"'palmoil'"})"> ${p.cat==='jersey'?'Jerseys':'Palm Oil'}</a> &rsaquo;
     <span>${p.name}</span>`;
-  document.getElementById('product-main-img').textContent=p.emoji;
+  const mainImgEl=document.getElementById('product-main-img');
+  if(p.imageUrl){mainImgEl.innerHTML=`<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;}
+  else{mainImgEl.textContent=p.emoji;}
   document.getElementById('product-info').innerHTML=`
     <div class="category">${p.subcat}</div>
     <h1>${p.name}</h1>
@@ -1632,6 +1663,7 @@ function buyNow(){
 }
 
 // ===== CHECKOUT =====
+let paystackSettings={enabled:false,publicKey:''};
 function renderCheckout(){
   // Pre-fill if logged in
   if(currentUser){
@@ -1653,6 +1685,15 @@ function renderCheckout(){
   </div>`).join('');
   renderCheckoutTotals();
   loadBankDetails();
+  loadPaystackSettingsForCheckout();
+}
+async function loadPaystackSettingsForCheckout(){
+  try{
+    const snap=await db.collection('settings').doc('paystack').get();
+    if(snap.exists)paystackSettings=snap.data();
+    const cardOption=document.getElementById('pay-card');
+    if(cardOption)cardOption.classList.toggle('hidden',!(paystackSettings.enabled&&paystackSettings.publicKey));
+  }catch(e){}
 }
 function renderCheckoutTotals(){
   const sub=getCartTotal();
@@ -1668,6 +1709,7 @@ function selectPayment(method){
   selectedPayment=method;
   document.getElementById('pay-cod').classList.toggle('selected',method==='cod');
   document.getElementById('pay-bank').classList.toggle('selected',method==='bank');
+  document.getElementById('pay-card').classList.toggle('selected',method==='card');
   const bankDiv=document.getElementById('bank-transfer-info');
   if(method==='bank')loadBankDetails(true);
   else bankDiv.style.display='none';
@@ -1700,7 +1742,7 @@ async function loadBankDetails(show=false){
 function applyCoupon(){
   const code=document.getElementById('coupon-input').value.trim().toUpperCase();
   const msg=document.getElementById('coupon-msg');
-  // Check coupon in Firestore
+  if(!code){msg.textContent='Enter a coupon code first';msg.style.color='var(--gray-600)';return;}
   db.collection('coupons').where('code','==',code).get().then(snap=>{
     if(snap.empty){msg.textContent='❌ Invalid coupon code';msg.style.color='var(--jersey-red)';return;}
     const coupon=snap.docs[0].data();
@@ -1712,10 +1754,10 @@ function applyCoupon(){
     msg.textContent=`✅ Coupon applied! You saved ₦${couponDiscount.toLocaleString()}`;
     msg.style.color='var(--palm-green)';
     renderCheckoutTotals();
-  }).catch(()=>{
-    // Offline demo
-    if(code==='PETERSON10'){couponDiscount=Math.round(getCartTotal()*0.1);appliedCoupon=code;msg.textContent='✅ 10% discount applied!';msg.style.color='var(--palm-green)';renderCheckoutTotals();}
-    else{msg.textContent='❌ Invalid coupon code';msg.style.color='var(--jersey-red)';}
+  }).catch(e=>{
+    msg.textContent='❌ Could not check coupon — try again';
+    msg.style.color='var(--jersey-red)';
+    console.error('applyCoupon failed:',e);
   });
 }
 async function placeOrder(){
@@ -1728,19 +1770,21 @@ async function placeOrder(){
   const state=document.getElementById('checkout-state').value.trim();
   if(!fname||!lname||!email||!phone||!address||!city||!state){showToast('Please fill all required fields','error');return;}
   if(!cart.length){showToast('Your cart is empty','error');return;}
+  if(selectedPayment==='card'){
+    initiatePaystack(fname+' '+lname,email,phone,address,city,state);
+    return;
+  }
   const methodLabel=selectedPayment==='bank'?'bank_transfer':'cash_on_delivery';
   await createOrder({name:fname+' '+lname,email,phone,address,city,state},cart,methodLabel,'pending');
 }
 function initiatePaystack(name,email,phone,address,city,state){
-  const total=(getCartTotal()-couponDiscount)*100;
-  if(typeof PaystackPop==='undefined'){
-    // Demo mode without Paystack script
-    showToast('Demo: Paystack payment simulated','info');
-    createOrder({name,email,phone,address,city,state},cart,'paystack','pending');
+  const total=Math.round((getCartTotal()-couponDiscount)*100);
+  if(typeof PaystackPop==='undefined'||!paystackSettings.publicKey){
+    showToast('Card payment is not set up yet. Please choose another payment method.','error');
     return;
   }
   const handler=PaystackPop.setup({
-    key:'pk_live_your_paystack_key',// Replace with real key
+    key:paystackSettings.publicKey,
     email,amount:total,currency:'NGN',
     metadata:{name,phone,address,city,state},
     callback:function(response){
@@ -1766,8 +1810,8 @@ async function createOrder(customer,items,paymentMethod,status,paymentRef=''){
     if(currentUser)showPage('account');
     else showPage('home');
   }catch(e){
-    showToast('Order saved! Check your email for confirmation.','success');
-    cart=[];saveCart();updateCartCount();
+    console.error('createOrder failed:',e);
+    showToast('Could not place order: '+(e.message||'check Firestore rules'),'error');
   }
 }
 
@@ -1782,6 +1826,7 @@ function renderAuth(mode){
     form.innerHTML=`
       <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="auth-email" type="email" placeholder="your@email.com"></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-control" id="auth-password" type="password" placeholder="Your password"></div>
+      <div style="text-align:right;margin-bottom:16px;"><button onclick="requestPasswordReset()" style="background:none;font-size:13px;color:var(--gray-600);cursor:pointer;">Forgot password?</button></div>
       <button class="btn btn-primary btn-full" onclick="loginUser()" style="margin-bottom:16px;">Sign In</button>
       <div class="auth-toggle">Don't have an account? <button onclick="renderAuth('register')">Create Account</button></div>`;
   }else{
@@ -1806,7 +1851,19 @@ async function loginUser(){
   try{
     await auth.signInWithEmailAndPassword(email,pass);
     showToast('Welcome back! 👋','success');
-  }catch(e){showToast(e.message,'error');}
+  }catch(e){showToast(friendlyAuthError(e),'error');}
+}
+function friendlyAuthError(e){
+  const map={
+    'auth/user-not-found':'No account found with that email.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/invalid-email':'That email address looks invalid.',
+    'auth/email-already-in-use':'An account with that email already exists.',
+    'auth/weak-password':'Password should be at least 6 characters.',
+    'auth/network-request-failed':'Network error — check your connection.',
+    'permission-denied':'Database permission denied — check Firestore security rules in your Firebase console.'
+  };
+  return map[e.code]||e.message||'Something went wrong';
 }
 async function registerUser(){
   const fname=document.getElementById('auth-fname').value.trim();
@@ -1819,11 +1876,11 @@ async function registerUser(){
     const cred=await auth.createUserWithEmailAndPassword(email,pass);
     await cred.user.updateProfile({displayName:fname+' '+lname});
     await db.collection('users').doc(cred.user.uid).set({
-      name:fname+' '+lname,email,phone,role:email===ADMIN_EMAIL?'admin':'customer',
+      name:fname+' '+lname,email,phone,role:email.toLowerCase()===ADMIN_EMAIL.toLowerCase()?'admin':'customer',
       createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     showToast('Account created! Welcome to Peterson 🎉','success');
-  }catch(e){showToast(e.message,'error');}
+  }catch(e){showToast(friendlyAuthError(e),'error');}
 }
 async function signOutUser(){
   await auth.signOut();
@@ -1834,20 +1891,44 @@ function handleAuthNav(){
   if(currentUser){showPage(isAdmin?'admin':'account');}
   else{showPage('auth');}
 }
+async function requestPasswordReset(){
+  const email=document.getElementById('auth-email').value.trim();
+  if(!email){showToast('Enter your email above first, then tap this link','error');return;}
+  try{
+    await auth.sendPasswordResetEmail(email);
+    try{await db.collection('resetRequests').add({email,status:'sent',createdAt:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+    showToast('Password reset email sent to '+email,'success');
+  }catch(e){showToast(friendlyAuthError(e),'error');}
+}
 
 auth.onAuthStateChanged(async user=>{
   currentUser=user;
   const authBtn=document.getElementById('auth-nav-btn');
   const mobileAuth=document.getElementById('mobile-auth-link');
+  const mobileAdminLink=document.getElementById('mobile-admin-link');
   if(user){
-    // Check role
+    // Check role — self-heals the designated admin email so first-time setup always works
     try{
-      const snap=await db.collection('users').doc(user.uid).get();
-      if(snap.exists){isAdmin=snap.data().role==='admin';}
-      else{isAdmin=user.email===ADMIN_EMAIL;}
-    }catch(e){isAdmin=user.email===ADMIN_EMAIL;}
+      const ref=db.collection('users').doc(user.uid);
+      const snap=await ref.get();
+      const isDesignatedAdmin=user.email&&user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase();
+      if(snap.exists){
+        isAdmin=snap.data().role==='admin';
+        if(!isAdmin&&isDesignatedAdmin){
+          await ref.update({role:'admin'});
+          isAdmin=true;
+        }
+      }else{
+        isAdmin=isDesignatedAdmin;
+        await ref.set({name:user.displayName||'',email:user.email||'',phone:'',role:isDesignatedAdmin?'admin':'customer',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      }
+    }catch(e){
+      isAdmin=user.email&&user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase();
+      console.error('Firestore role check failed — check security rules:',e);
+    }
     if(authBtn){authBtn.textContent='👤';authBtn.title=user.displayName||user.email;}
     if(mobileAuth)mobileAuth.textContent=isAdmin?'🔧 Admin Panel':'My Account';
+    if(mobileAdminLink)mobileAdminLink.classList.toggle('hidden',!isAdmin);
     if(isAdmin){
       // Add admin link to navbar
       let adminLink=document.getElementById('nav-admin');
@@ -1855,11 +1936,13 @@ auth.onAuthStateChanged(async user=>{
         const navLinks=document.querySelector('.category-strip-inner');
         if(navLinks){const a=document.createElement('a');a.href='#';a.id='nav-admin';a.style.color='var(--market-orange)';a.style.fontWeight='700';a.textContent='\u{1F527} Admin Panel';a.onclick=()=>showPage('admin');navLinks.appendChild(a);}
       }
+      refreshResetRequestBadge();
     }
   }else{
     currentUser=null;isAdmin=false;
     if(authBtn){authBtn.textContent='👤';authBtn.title='Sign In';}
     if(mobileAuth)mobileAuth.textContent='Sign In / Register';
+    if(mobileAdminLink)mobileAdminLink.classList.add('hidden');
   }
 });
 
@@ -1934,16 +2017,24 @@ function adminTab(tab){
   document.querySelectorAll('.admin-nav a').forEach(a=>{a.classList.remove('active');});
   const el=document.getElementById('admin-tab-'+tab);
   if(el)el.classList.add('active');
-  const titles={overview:'Dashboard',products:'All Products','add-product':'Add Product',orders:'All Orders',customers:'Customers','payment-settings':'Payment Settings',coupons:'Coupons'};
+  const titles={overview:'Dashboard',analytics:'Analytics',products:'All Products','add-product':'Add Product','bulk-import':'Bulk Import',banners:'Banners',orders:'All Orders',coupons:'Coupons',reviews:'Reviews',customers:'Users',chats:'Chats','manage-admins':'Manage Admins','reset-requests':'Reset Requests','payment-settings':'Payment Settings','paystack-settings':'Paystack Settings'};
   document.getElementById('admin-topbar-title').textContent=titles[tab]||tab;
   const content=document.getElementById('admin-content');
   if(tab==='overview')renderAdminOverview(content);
+  else if(tab==='analytics')renderAdminAnalytics(content);
   else if(tab==='products')renderAdminProducts(content);
   else if(tab==='add-product')renderAdminAddProduct(content);
+  else if(tab==='bulk-import')renderAdminBulkImport(content);
+  else if(tab==='banners')renderAdminBanners(content);
   else if(tab==='orders')renderAdminOrders(content);
   else if(tab==='customers')renderAdminCustomers(content);
+  else if(tab==='chats')renderAdminChats(content);
+  else if(tab==='manage-admins')renderAdminManageAdmins(content);
+  else if(tab==='reset-requests')renderAdminResetRequests(content);
   else if(tab==='payment-settings')renderAdminPaymentSettings(content);
+  else if(tab==='paystack-settings')renderAdminPaystackSettings(content);
   else if(tab==='coupons')renderAdminCoupons(content);
+  else if(tab==='reviews')renderAdminReviews(content);
   closeAdminSidebar();
 }
 function toggleAdminSidebar(){
@@ -1968,23 +2059,26 @@ async function renderAdminOverview(el){
     <div id="admin-recent-orders"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div>
   </div>`;
   try{
-    const [ordersSnap,usersSnap]=await Promise.all([
+    const [allOrdersSnap,recentOrdersSnap,usersSnap]=await Promise.all([
+      db.collection('orders').get(),
       db.collection('orders').orderBy('createdAt','desc').limit(5).get(),
       db.collection('users').where('role','==','customer').get()
     ]);
-    const orders=ordersSnap.docs.map(d=>d.data());
-    const revenue=orders.reduce((s,o)=>s+(o.total||0),0);
-    document.getElementById('as-orders').textContent=orders.length;
+    const allOrders=allOrdersSnap.docs.map(d=>d.data());
+    const recentOrders=recentOrdersSnap.docs.map(d=>d.data());
+    const revenue=allOrders.reduce((s,o)=>s+(o.total||0),0);
+    document.getElementById('as-orders').textContent=allOrders.length;
     document.getElementById('as-customers').textContent=usersSnap.size;
     document.getElementById('as-products').textContent=getProducts().length;
     document.getElementById('as-revenue').textContent='₦'+revenue.toLocaleString();
-    document.getElementById('admin-recent-orders').innerHTML=orders.length?`<table><thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody>${orders.map(o=>`<tr><td><strong>${o.orderId}</strong></td><td>${o.customer?.name||'-'}</td><td>₦${(o.total||0).toLocaleString()}</td><td>${o.paymentMethod}</td><td><span class="order-status status-${o.status}">${o.status}</span></td><td><div class="action-btns"><button class="btn btn-sm btn-outline" onclick="adminTab('orders')">Update</button></div></td></tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">No orders yet</div>';
+    document.getElementById('admin-recent-orders').innerHTML=recentOrders.length?`<table><thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody>${recentOrders.map(o=>`<tr><td><strong>${o.orderId}</strong></td><td>${o.customer?.name||'-'}</td><td>₦${(o.total||0).toLocaleString()}</td><td>${o.paymentMethod}</td><td><span class="order-status status-${o.status}">${o.status}</span></td><td><div class="action-btns"><button class="btn btn-sm btn-outline" onclick="adminTab('orders')">Update</button></div></td></tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">No orders yet</div>';
   }catch(e){
+    console.error('renderAdminOverview failed:',e);
     document.getElementById('as-orders').textContent='0';
     document.getElementById('as-customers').textContent='0';
     document.getElementById('as-products').textContent=getProducts().length;
     document.getElementById('as-revenue').textContent='₦0';
-    document.getElementById('admin-recent-orders').innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">No data available</div>';
+    document.getElementById('admin-recent-orders').innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load orders — check Firestore rules.</div>';
   }
 }
 async function renderAdminProducts(el){
@@ -1993,37 +2087,76 @@ async function renderAdminProducts(el){
     <div class="admin-table-header"><h4>All Products (${products.length})</h4><button class="btn btn-primary btn-sm" onclick="adminTab('add-product')">+ Add Product</button></div>
     <table><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
     <tbody>${products.map(p=>`<tr>
-      <td><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:28px;">${p.emoji}</span><div><strong>${p.name}</strong><br><span style="font-size:12px;color:var(--gray-400);">${p.subcat}</span></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:12px;">${p.imageUrl?`<img src="${p.imageUrl}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;" alt="">`:`<span style="font-size:28px;">${p.emoji||'📦'}</span>`}<div><strong>${p.name}</strong><br><span style="font-size:12px;color:var(--gray-400);">${p.subcat}</span></div></div></td>
       <td><span class="badge ${p.cat==='jersey'?'badge-red':'badge-green'}">${p.cat}</span></td>
       <td>₦${p.price.toLocaleString()}</td>
       <td>${p.stock}</td>
-      <td><div class="action-btns"><button class="btn btn-sm btn-outline" onclick="showProductDetail('${p.id}')">View</button><button class="btn btn-sm btn-red" onclick="deleteProductConfirm('${p.id}')">Delete</button></div></td>
+      <td><div class="action-btns"><button class="btn btn-sm btn-outline" onclick="editProductForm('${p.id}')">Edit</button><button class="btn btn-sm btn-outline" onclick="showProductDetail('${p.id}')">View</button><button class="btn btn-sm btn-red" onclick="deleteProductConfirm('${p.id}')">Delete</button></div></td>
     </tr>`).join('')}</tbody></table>
   </div>`;
 }
-function renderAdminAddProduct(el){
+let editingProductId=null;
+let pendingProductImageFile=null;
+function renderAdminAddProduct(el,product=null){
+  editingProductId=product?product.id:null;
+  pendingProductImageFile=null;
   el.innerHTML=`<div class="admin-panel">
-    <h3>ADD NEW PRODUCT</h3>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Product Name *</label><input class="form-control" id="ap-name" placeholder="e.g. Manchester City Jersey"></div>
-      <div class="form-group"><label class="form-label">Category *</label><select class="form-control" id="ap-cat"><option value="jersey">Jersey</option><option value="palmoil">Palm Oil</option></select></div>
+    <h3>${product?'EDIT PRODUCT':'ADD NEW PRODUCT'}</h3>
+    <div class="form-group">
+      <label class="form-label">Product Image</label>
+      <div class="img-upload-area" id="ap-img-drop" onclick="document.getElementById('ap-image-file').click()">
+        <img id="ap-img-preview" src="${product?.imageUrl||''}" style="max-width:140px;max-height:140px;border-radius:8px;margin:0 auto 12px;${product?.imageUrl?'':'display:none;'}">
+        <div class="upload-icon">📷</div>
+        <p>Click to upload a product photo (JPG/PNG, max 5MB)</p>
+      </div>
+      <input type="file" id="ap-image-file" accept="image/*" class="hidden" onchange="handleProductImageSelect(event)">
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Subcategory</label><input class="form-control" id="ap-subcat" placeholder="e.g. Club Jersey"></div>
-      <div class="form-group"><label class="form-label">Emoji/Icon</label><input class="form-control" id="ap-emoji" placeholder="⚽" value="⚽"></div>
-    </div>
-    <div class="form-group"><label class="form-label">Description *</label><textarea class="form-control" id="ap-desc" rows="3" placeholder="Product description..."></textarea></div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Price (₦) *</label><input class="form-control" type="number" id="ap-price" placeholder="12500"></div>
-      <div class="form-group"><label class="form-label">Old Price (₦)</label><input class="form-control" type="number" id="ap-oldprice" placeholder="15000 (optional)"></div>
+      <div class="form-group"><label class="form-label">Product Name *</label><input class="form-control" id="ap-name" placeholder="e.g. Manchester City Jersey" value="${product?.name||''}"></div>
+      <div class="form-group"><label class="form-label">Category *</label><select class="form-control" id="ap-cat"><option value="jersey" ${product?.cat==='jersey'?'selected':''}>Jersey</option><option value="palmoil" ${product?.cat==='palmoil'?'selected':''}>Palm Oil</option></select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Stock *</label><input class="form-control" type="number" id="ap-stock" placeholder="25"></div>
-      <div class="form-group"><label class="form-label">Has Sizes (Jerseys)</label><select class="form-control" id="ap-hassizes"><option value="yes">Yes</option><option value="no">No</option></select></div>
+      <div class="form-group"><label class="form-label">Subcategory</label><input class="form-control" id="ap-subcat" placeholder="e.g. Club Jersey" value="${product?.subcat||''}"></div>
+      <div class="form-group"><label class="form-label">Fallback Emoji/Icon</label><input class="form-control" id="ap-emoji" placeholder="⚽" value="${product?.emoji||'⚽'}"></div>
     </div>
-    <div class="form-group"><label class="form-label">Featured Product?</label><select class="form-control" id="ap-featured"><option value="no">No</option><option value="yes">Yes</option></select></div>
-    <button class="btn btn-primary" onclick="addProduct()">Add Product</button>
+    <div class="form-group"><label class="form-label">Description *</label><textarea class="form-control" id="ap-desc" rows="3" placeholder="Product description...">${product?.desc||''}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Price (₦) *</label><input class="form-control" type="number" id="ap-price" placeholder="12500" value="${product?.price||''}"></div>
+      <div class="form-group"><label class="form-label">Old Price (₦)</label><input class="form-control" type="number" id="ap-oldprice" placeholder="15000 (optional)" value="${product?.oldPrice||''}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Stock *</label><input class="form-control" type="number" id="ap-stock" placeholder="25" value="${product?.stock??''}"></div>
+      <div class="form-group"><label class="form-label">Has Sizes (Jerseys)</label><select class="form-control" id="ap-hassizes"><option value="yes" ${product?.sizes?'selected':''}>Yes</option><option value="no" ${!product||!product.sizes?'selected':''}>No</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Featured Product?</label><select class="form-control" id="ap-featured"><option value="no" ${!product?.featured?'selected':''}>No</option><option value="yes" ${product?.featured?'selected':''}>Yes</option></select></div>
+    <div style="display:flex;gap:12px;">
+      <button class="btn btn-primary" id="ap-submit-btn" onclick="addProduct()">${product?'Save Changes':'Add Product'}</button>
+      ${product?`<button class="btn btn-outline" onclick="adminTab('products')">Cancel</button>`:''}
+    </div>
   </div>`;
+}
+function editProductForm(id){
+  const p=getProducts().find(x=>x.id===id);
+  if(!p){showToast('Product not found','error');return;}
+  document.getElementById('admin-topbar-title').textContent='Edit Product';
+  renderAdminAddProduct(document.getElementById('admin-content'),p);
+}
+function handleProductImageSelect(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  if(file.size>5*1024*1024){showToast('Image must be under 5MB','error');e.target.value='';return;}
+  pendingProductImageFile=file;
+  const preview=document.getElementById('ap-img-preview');
+  const reader=new FileReader();
+  reader.onload=ev=>{preview.src=ev.target.result;preview.style.display='block';};
+  reader.readAsDataURL(file);
+}
+async function uploadProductImage(productId,file){
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+  const path=`product-images/${productId}.${ext}`;
+  const ref=storage.ref().child(path);
+  await ref.put(file);
+  return await ref.getDownloadURL();
 }
 async function addProduct(){
   const name=document.getElementById('ap-name').value.trim();
@@ -2036,25 +2169,43 @@ async function addProduct(){
   const stock=parseInt(document.getElementById('ap-stock').value);
   const hasSizes=document.getElementById('ap-hassizes').value==='yes';
   const featured=document.getElementById('ap-featured').value==='yes';
-  if(!name||!desc||!price||!stock){showToast('Please fill required fields','error');return;}
-  const product={id:'db-'+Date.now(),name,cat,subcat,emoji,desc,price,oldPrice,stock,sizes:hasSizes?['S','M','L','XL','XXL']:null,featured,rating:5,reviews:0,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+  if(!name||!desc||!isFinite(price)||!isFinite(stock)){showToast('Please fill required fields','error');return;}
+  const submitBtn=document.getElementById('ap-submit-btn');
+  const isEdit=!!editingProductId;
+  const id=isEdit?editingProductId:'db-'+Date.now();
+  submitBtn.disabled=true;submitBtn.textContent='Saving...';
   try{
-    await db.collection('products').doc(product.id).set(product);
-    allProducts.push(product);
-    showToast('Product added successfully!','success');
+    let imageUrl=isEdit?(getProducts().find(p=>p.id===id)?.imageUrl||null):null;
+    if(pendingProductImageFile){
+      imageUrl=await uploadProductImage(id,pendingProductImageFile);
+    }
+    const product={id,name,cat,subcat,emoji,desc,price,oldPrice,stock,sizes:hasSizes?['S','M','L','XL','XXL']:null,featured,imageUrl,
+      rating:isEdit?(getProducts().find(p=>p.id===id)?.rating||5):5,
+      reviews:isEdit?(getProducts().find(p=>p.id===id)?.reviews||0):0,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+    if(!isEdit)product.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+    await db.collection('products').doc(id).set(product,{merge:true});
+    const idx=allProducts.findIndex(p=>p.id===id);
+    if(idx>-1)allProducts[idx]={...allProducts[idx],...product};
+    else allProducts.push(product);
+    showToast(isEdit?'Product updated!':'Product added successfully!','success');
     adminTab('products');
   }catch(e){
-    allProducts.push(product);
-    showToast('Product added (demo mode)','success');
-    adminTab('products');
+    console.error('addProduct failed:',e);
+    showToast('Could not save product: '+(e.message||'check Firestore/Storage rules'),'error');
+    submitBtn.disabled=false;submitBtn.textContent=isEdit?'Save Changes':'Add Product';
   }
 }
 async function deleteProductConfirm(id){
   if(!confirm('Delete this product?'))return;
-  try{await db.collection('products').doc(id).delete();}catch(e){}
-  allProducts=allProducts.filter(p=>p.id!==id);
-  showToast('Product deleted','info');
-  adminTab('products');
+  try{
+    await db.collection('products').doc(id).delete();
+    allProducts=allProducts.filter(p=>p.id!==id);
+    showToast('Product deleted','info');
+    adminTab('products');
+  }catch(e){
+    showToast('Could not delete: '+(e.message||'check Firestore rules'),'error');
+  }
 }
 async function renderAdminOrders(el){
   el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>All Orders</h4></div><div id="all-orders-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
@@ -2181,6 +2332,332 @@ async function deleteCoupon(docId){
   catch(e){showToast('Could not delete','error');}
 }
 
+// ===== ANALYTICS =====
+async function renderAdminAnalytics(el){
+  el.innerHTML=`<div class="admin-panel"><h3>SALES ANALYTICS</h3><div id="analytics-body"><div class="spinner" style="margin:40px auto;"></div></div></div>`;
+  const body=document.getElementById('analytics-body');
+  try{
+    const snap=await db.collection('orders').get();
+    const orders=snap.docs.map(d=>d.data());
+    const revenue=orders.reduce((s,o)=>s+(o.total||0),0);
+    const byStatus={};
+    orders.forEach(o=>{byStatus[o.status]=(byStatus[o.status]||0)+1;});
+    const byCat={jersey:0,palmoil:0};
+    orders.forEach(o=>(o.items||[]).forEach(i=>{if(byCat[i.cat]!==undefined)byCat[i.cat]+=(i.price*i.qty);}));
+    const products=getProducts();
+    const lowStock=products.filter(p=>p.stock<5);
+    body.innerHTML=`
+      <div class="stat-cards" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+        <div class="stat-card"><div class="stat-icon" style="background:#e0f4e3;">💰</div><div class="stat-num">₦${revenue.toLocaleString()}</div><div class="stat-label">Total Revenue</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#ffe0e0;">🛒</div><div class="stat-num">${orders.length}</div><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#fff3e0;">📦</div><div class="stat-num">${orders.length?Math.round(revenue/orders.length).toLocaleString():0}</div><div class="stat-label">Avg. Order Value (₦)</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="admin-panel" style="margin-bottom:0;">
+          <h3 style="font-size:16px;">Orders by Status</h3>
+          ${Object.keys(byStatus).length?Object.entries(byStatus).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);"><span class="order-status status-${k}">${k}</span><strong>${v}</strong></div>`).join(''):'<p style="color:var(--gray-400);">No orders yet</p>'}
+        </div>
+        <div class="admin-panel" style="margin-bottom:0;">
+          <h3 style="font-size:16px;">Revenue by Category</h3>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);"><span class="badge badge-red">Jersey</span><strong>₦${byCat.jersey.toLocaleString()}</strong></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;"><span class="badge badge-green">Palm Oil</span><strong>₦${byCat.palmoil.toLocaleString()}</strong></div>
+        </div>
+      </div>
+      <div class="admin-table-wrap" style="margin-top:24px;">
+        <div class="admin-table-header"><h4>⚠️ Low Stock Products (under 5 units)</h4></div>
+        ${lowStock.length?`<table><thead><tr><th>Product</th><th>Stock</th></tr></thead><tbody>${lowStock.map(p=>`<tr><td>${p.name}</td><td><span class="badge badge-red">${p.stock} left</span></td></tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">All products well stocked</div>'}
+      </div>`;
+  }catch(e){body.innerHTML='<p style="color:var(--gray-400);">Could not load analytics. '+(e.message||'')+'</p>';}
+}
+
+// ===== BULK IMPORT =====
+function renderAdminBulkImport(el){
+  el.innerHTML=`<div class="admin-panel">
+    <h3>BULK IMPORT PRODUCTS (CSV)</h3>
+    <p style="color:var(--gray-600);margin-bottom:16px;font-size:14px;">Upload a CSV with columns: <code>name,cat,subcat,price,oldPrice,stock,desc,emoji,featured</code>. Header row required. <code>cat</code> must be <code>jersey</code> or <code>palmoil</code>.</p>
+    <div class="img-upload-area" onclick="document.getElementById('bulk-csv-file').click()">
+      <div class="upload-icon">📄</div>
+      <p>Click to choose a .csv file</p>
+    </div>
+    <input type="file" id="bulk-csv-file" accept=".csv" class="hidden" onchange="handleBulkCsv(event)">
+    <button class="btn btn-outline btn-sm" style="margin-top:16px;" onclick="downloadSampleCsv()">Download sample CSV</button>
+    <div id="bulk-import-preview" style="margin-top:20px;"></div>
+  </div>`;
+}
+function downloadSampleCsv(){
+  const csv='name,cat,subcat,price,oldPrice,stock,desc,emoji,featured\nLiverpool Home Jersey,jersey,Club Jersey,12000,15000,20,Premium Liverpool home jersey.,🔴,yes\nPeterson Palm Oil - 3L,palmoil,Medium,6500,,40,Pure natural palm oil 3 litre bottle.,🫙,no';
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='peterson-products-sample.csv';a.click();
+}
+let parsedBulkRows=[];
+function handleBulkCsv(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const lines=ev.target.result.split(/\r?\n/).filter(l=>l.trim());
+      const headers=lines[0].split(',').map(h=>h.trim());
+      parsedBulkRows=lines.slice(1).map(line=>{
+        const vals=line.split(',');
+        const row={};
+        headers.forEach((h,i)=>row[h]=(vals[i]||'').trim());
+        return row;
+      });
+      document.getElementById('bulk-import-preview').innerHTML=`
+        <div class="admin-table-wrap">
+          <div class="admin-table-header"><h4>Preview (${parsedBulkRows.length} products)</h4><button class="btn btn-primary btn-sm" onclick="confirmBulkImport()">Import All</button></div>
+          <table><thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead>
+          <tbody>${parsedBulkRows.map(r=>`<tr><td>${r.name||'-'}</td><td>${r.cat||'-'}</td><td>₦${r.price||0}</td><td>${r.stock||0}</td></tr>`).join('')}</tbody></table>
+        </div>`;
+    }catch(err){showToast('Could not parse CSV file','error');}
+  };
+  reader.readAsText(file);
+}
+async function confirmBulkImport(){
+  if(!parsedBulkRows.length)return;
+  let success=0,failed=0;
+  for(const r of parsedBulkRows){
+    if(!r.name||!r.price){failed++;continue;}
+    const id='db-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);
+    const product={id,name:r.name,cat:r.cat==='palmoil'?'palmoil':'jersey',subcat:r.subcat||r.cat||'General',
+      price:parseFloat(r.price)||0,oldPrice:r.oldPrice?parseFloat(r.oldPrice):null,stock:parseInt(r.stock)||0,
+      desc:r.desc||r.name,emoji:r.emoji||'📦',featured:(r.featured||'').toLowerCase()==='yes',sizes:r.cat==='jersey'?['S','M','L','XL','XXL']:null,
+      rating:5,reviews:0,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+    try{await db.collection('products').doc(id).set(product);allProducts.push(product);success++;}
+    catch(e){failed++;}
+  }
+  showToast(`Imported ${success} products${failed?`, ${failed} failed`:''}`,success?'success':'error');
+  parsedBulkRows=[];
+  adminTab('products');
+}
+
+// ===== BANNERS =====
+async function renderAdminBanners(el){
+  el.innerHTML=`<div class="admin-panel">
+    <h3>ADD HOME BANNER</h3>
+    <div class="form-group"><label class="form-label">Banner Image</label>
+      <div class="img-upload-area" onclick="document.getElementById('banner-img-file').click()">
+        <img id="banner-img-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin:0 auto 12px;display:none;">
+        <div class="upload-icon">🖼️</div><p>Click to upload a banner image (recommended 1200x500)</p>
+      </div>
+      <input type="file" id="banner-img-file" accept="image/*" class="hidden" onchange="handleBannerImageSelect(event)">
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Title</label><input class="form-control" id="banner-title" placeholder="e.g. Jersey Season Sale"></div>
+      <div class="form-group"><label class="form-label">Link Page</label><select class="form-control" id="banner-link"><option value="shop">Shop All</option><option value="jerseys">Jerseys</option><option value="palmoil">Palm Oil</option></select></div>
+    </div>
+    <button class="btn btn-primary" id="banner-submit-btn" onclick="addBanner()">Add Banner</button>
+  </div>
+  <div class="admin-table-wrap" style="margin-top:24px;" id="banners-list-wrap">
+    <div class="admin-table-header"><h4>Current Banners</h4></div>
+    <div id="banners-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div>
+  </div>`;
+  loadBannersList();
+}
+let pendingBannerFile=null;
+function handleBannerImageSelect(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  if(file.size>5*1024*1024){showToast('Image must be under 5MB','error');return;}
+  pendingBannerFile=file;
+  const preview=document.getElementById('banner-img-preview');
+  const reader=new FileReader();
+  reader.onload=ev=>{preview.src=ev.target.result;preview.style.display='block';};
+  reader.readAsDataURL(file);
+}
+async function addBanner(){
+  const title=document.getElementById('banner-title').value.trim();
+  const link=document.getElementById('banner-link').value;
+  if(!pendingBannerFile){showToast('Please choose a banner image','error');return;}
+  const btn=document.getElementById('banner-submit-btn');
+  btn.disabled=true;btn.textContent='Uploading...';
+  try{
+    const id='banner-'+Date.now();
+    const ref=storage.ref().child(`banners/${id}.jpg`);
+    await ref.put(pendingBannerFile);
+    const imageUrl=await ref.getDownloadURL();
+    await db.collection('banners').doc(id).set({id,title,link,imageUrl,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Banner added!','success');
+    pendingBannerFile=null;
+    adminTab('banners');
+  }catch(e){
+    showToast('Could not upload banner: '+(e.message||'check Storage rules'),'error');
+    btn.disabled=false;btn.textContent='Add Banner';
+  }
+}
+async function loadBannersList(){
+  const wrap=document.getElementById('banners-list');
+  try{
+    const snap=await db.collection('banners').orderBy('createdAt','desc').get();
+    const banners=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    wrap.innerHTML=banners.length?banners.map(b=>`<div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--gray-100);">
+      <img src="${b.imageUrl}" style="width:100px;height:50px;object-fit:cover;border-radius:6px;">
+      <div style="flex:1;"><strong>${b.title||'Untitled'}</strong><br><span style="font-size:12px;color:var(--gray-400);">Links to: ${b.link}</span></div>
+      <button class="btn btn-sm btn-red" onclick="deleteBanner('${b.docId}')">Delete</button>
+    </div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--gray-400);">No banners yet</div>';
+  }catch(e){wrap.innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load banners</div>';}
+}
+async function deleteBanner(docId){
+  if(!confirm('Delete this banner?'))return;
+  try{await db.collection('banners').doc(docId).delete();showToast('Banner deleted','info');loadBannersList();}
+  catch(e){showToast('Could not delete banner','error');}
+}
+
+// ===== REVIEWS MODERATION =====
+async function renderAdminReviews(el){
+  el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>Customer Reviews</h4></div><div id="admin-reviews-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
+  try{
+    const snap=await db.collection('reviews').orderBy('createdAt','desc').get();
+    const reviews=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    document.getElementById('admin-reviews-list').innerHTML=reviews.length?`<table><thead><tr><th>Product</th><th>Customer</th><th>Rating</th><th>Comment</th><th>Status</th><th>Actions</th></tr></thead><tbody>${reviews.map(r=>`<tr>
+      <td>${r.productName||'-'}</td><td>${r.customerName||'Anonymous'}</td><td>${'★'.repeat(r.rating||0)}${'☆'.repeat(5-(r.rating||0))}</td>
+      <td style="max-width:240px;">${(r.comment||'').slice(0,120)}</td>
+      <td><span class="badge ${r.approved?'badge-green':'badge-gold'}">${r.approved?'Published':'Pending'}</span></td>
+      <td><div class="action-btns">${!r.approved?`<button class="btn btn-sm btn-green" onclick="moderateReview('${r.docId}',true)">Approve</button>`:''}<button class="btn btn-sm btn-red" onclick="moderateReview('${r.docId}',null)">Delete</button></div></td>
+    </tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">No reviews submitted yet</div>';
+  }catch(e){document.getElementById('admin-reviews-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load reviews</div>';}
+}
+async function moderateReview(docId,approve){
+  try{
+    if(approve===null){if(!confirm('Delete this review?'))return;await db.collection('reviews').doc(docId).delete();showToast('Review deleted','info');}
+    else{await db.collection('reviews').doc(docId).update({approved:approve});showToast('Review approved','success');}
+    adminTab('reviews');
+  }catch(e){showToast('Action failed','error');}
+}
+
+// ===== CHATS =====
+async function renderAdminChats(el){
+  el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>Customer Chat Threads</h4></div><div id="admin-chats-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
+  try{
+    const snap=await db.collection('chats').orderBy('lastMessageAt','desc').get();
+    const chats=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    document.getElementById('admin-chats-list').innerHTML=chats.length?chats.map(c=>`<div style="padding:16px 20px;border-bottom:1px solid var(--gray-100);cursor:pointer;" onclick="openAdminChat('${c.docId}')">
+      <div style="display:flex;justify-content:space-between;"><strong>${c.customerName||c.customerEmail||'Customer'}</strong><span style="font-size:12px;color:var(--gray-400);">${c.lastMessageAt?.toDate?.()?.toLocaleString()||''}</span></div>
+      <p style="font-size:13px;color:var(--gray-600);margin-top:4px;">${(c.lastMessage||'').slice(0,80)}</p>
+    </div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--gray-400);">No chats yet. Customers can message you via WhatsApp until live chat is used.</div>';
+  }catch(e){document.getElementById('admin-chats-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load chats</div>';}
+}
+async function openAdminChat(docId){
+  try{
+    const msgsSnap=await db.collection('chats').doc(docId).collection('messages').orderBy('createdAt','asc').get();
+    const msgs=msgsSnap.docs.map(d=>d.data());
+    const content=document.getElementById('admin-content');
+    content.innerHTML=`<div class="admin-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h3 style="border:none;margin:0;padding:0;">Chat</h3><button class="btn btn-outline btn-sm" onclick="adminTab('chats')">&larr; Back</button></div>
+      <div style="max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+        ${msgs.map(m=>`<div style="align-self:${m.from==='admin'?'flex-end':'flex-start'};background:${m.from==='admin'?'var(--black)':'var(--gray-100)'};color:${m.from==='admin'?'white':'black'};padding:10px 14px;border-radius:12px;max-width:70%;">${m.text}</div>`).join('')||'<p style="color:var(--gray-400);">No messages yet</p>'}
+      </div>
+      <div style="display:flex;gap:10px;"><input class="form-control" id="admin-chat-reply" placeholder="Type a reply..."><button class="btn btn-primary" onclick="sendAdminChatReply('${docId}')">Send</button></div>
+    </div>`;
+  }catch(e){showToast('Could not open chat','error');}
+}
+async function sendAdminChatReply(docId){
+  const input=document.getElementById('admin-chat-reply');
+  const text=input.value.trim();
+  if(!text)return;
+  try{
+    await db.collection('chats').doc(docId).collection('messages').add({text,from:'admin',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    await db.collection('chats').doc(docId).update({lastMessage:text,lastMessageAt:firebase.firestore.FieldValue.serverTimestamp()});
+    input.value='';
+    openAdminChat(docId);
+  }catch(e){showToast('Could not send reply','error');}
+}
+
+// ===== MANAGE ADMINS =====
+async function renderAdminManageAdmins(el){
+  el.innerHTML=`<div class="admin-panel">
+    <h3>PROMOTE A USER TO ADMIN</h3>
+    <div class="form-row">
+      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">User's Email</label><input class="form-control" id="promote-email" placeholder="user@example.com"></div>
+    </div>
+    <button class="btn btn-primary" onclick="promoteToAdmin()">Grant Admin Access</button>
+  </div>
+  <div class="admin-table-wrap" style="margin-top:24px;"><div class="admin-table-header"><h4>Current Admins</h4></div><div id="admins-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
+  loadAdminsList();
+}
+async function promoteToAdmin(){
+  const email=document.getElementById('promote-email').value.trim().toLowerCase();
+  if(!email){showToast('Enter an email address','error');return;}
+  try{
+    const snap=await db.collection('users').where('email','==',email).limit(1).get();
+    if(snap.empty){showToast('No user found with that email. They must register first.','error');return;}
+    await db.collection('users').doc(snap.docs[0].id).update({role:'admin'});
+    showToast(email+' is now an admin','success');
+    document.getElementById('promote-email').value='';
+    loadAdminsList();
+  }catch(e){showToast('Could not promote user: '+(e.message||''),'error');}
+}
+async function loadAdminsList(){
+  const wrap=document.getElementById('admins-list');
+  try{
+    const snap=await db.collection('users').where('role','==','admin').get();
+    const admins=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    wrap.innerHTML=admins.length?`<table><thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead><tbody>${admins.map(a=>`<tr>
+      <td>${a.name||'-'}</td><td>${a.email}</td>
+      <td>${a.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()?'<span style="font-size:12px;color:var(--gray-400);">Owner</span>':`<button class="btn btn-sm btn-red" onclick="revokeAdmin('${a.docId}')">Revoke</button>`}</td>
+    </tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">No admins found</div>';
+  }catch(e){wrap.innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load admins</div>';}
+}
+async function revokeAdmin(docId){
+  if(!confirm('Remove admin access for this user?'))return;
+  try{await db.collection('users').doc(docId).update({role:'customer'});showToast('Admin access revoked','info');loadAdminsList();}
+  catch(e){showToast('Could not revoke access','error');}
+}
+
+// ===== RESET REQUESTS =====
+async function renderAdminResetRequests(el){
+  el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>Password Reset Requests</h4></div><div id="reset-requests-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
+  try{
+    const snap=await db.collection('resetRequests').orderBy('createdAt','desc').get();
+    const reqs=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    document.getElementById('reset-requests-list').innerHTML=reqs.length?`<table><thead><tr><th>Email</th><th>Requested</th><th>Status</th><th>Actions</th></tr></thead><tbody>${reqs.map(r=>`<tr>
+      <td>${r.email}</td><td>${r.createdAt?.toDate?.()?.toLocaleString()||'-'}</td>
+      <td><span class="badge ${r.status==='resolved'?'badge-green':'badge-gold'}">${r.status||'sent'}</span></td>
+      <td>${r.status!=='resolved'?`<button class="btn btn-sm btn-outline" onclick="markResetResolved('${r.docId}')">Mark Resolved</button>`:''}</td>
+    </tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">No reset requests</div>';
+    refreshResetRequestBadge();
+  }catch(e){document.getElementById('reset-requests-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load requests</div>';}
+}
+async function markResetResolved(docId){
+  try{await db.collection('resetRequests').doc(docId).update({status:'resolved'});showToast('Marked resolved','success');adminTab('reset-requests');}
+  catch(e){showToast('Could not update','error');}
+}
+async function refreshResetRequestBadge(){
+  try{
+    const snap=await db.collection('resetRequests').where('status','==','sent').get();
+    const badge=document.getElementById('reset-req-badge');
+    if(badge){
+      if(snap.size>0){badge.textContent=snap.size;badge.classList.remove('hidden');}
+      else{badge.classList.add('hidden');}
+    }
+  }catch(e){}
+}
+
+// ===== PAYSTACK SETTINGS =====
+async function renderAdminPaystackSettings(el){
+  let data={publicKey:'',enabled:false};
+  try{const snap=await db.collection('settings').doc('paystack').get();if(snap.exists)data=snap.data();}catch(e){}
+  el.innerHTML=`<div class="admin-panel">
+    <h3>PAYSTACK SETTINGS</h3>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:var(--gray-100);border-radius:var(--radius);">
+      <span style="font-weight:700;">Enable Paystack at Checkout</span>
+      <label class="toggle-switch"><input type="checkbox" id="ps-enabled" ${data.enabled?'checked':''}><span class="toggle-slider"></span></label>
+    </div>
+    <div class="form-group"><label class="form-label">Paystack Public Key</label><input class="form-control" id="ps-public-key" placeholder="pk_live_xxxxxxxx" value="${data.publicKey||''}"></div>
+    <p class="form-text" style="margin-bottom:16px;">Find this in your Paystack Dashboard under Settings &rarr; API Keys &amp; Webhooks. Never paste your secret key here — only the public key is safe for the browser.</p>
+    <button class="btn btn-primary" onclick="savePaystackSettings()">Save Settings</button>
+  </div>`;
+}
+async function savePaystackSettings(){
+  const enabled=document.getElementById('ps-enabled').checked;
+  const publicKey=document.getElementById('ps-public-key').value.trim();
+  try{
+    await db.collection('settings').doc('paystack').set({enabled,publicKey,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Paystack settings saved!','success');
+  }catch(e){showToast('Could not save settings: '+(e.message||''),'error');}
+}
+
 // ===== MISC =====
 function subscribeNewsletter(){
   const email=document.getElementById('newsletter-email').value.trim();
@@ -2274,25 +2751,46 @@ async function loadFirestoreProducts(){
     const snap=await db.collection('products').get();
     if(!snap.empty){
       allProducts=snap.docs.map(d=>({...d.data(),id:d.id}));
+    }else{
+      allProducts=sampleProducts;
     }
   }catch(e){
-    // Use sample products
+    console.error('loadFirestoreProducts failed — using sample data. Check Firestore rules:',e);
     allProducts=sampleProducts;
   }
   renderFeatured();
+  renderJerseys();
+  renderPalmOil();
+  if(document.getElementById('page-shop').classList.contains('active'))filterProducts();
+}
+
+async function loadHomeBanners(){
+  try{
+    const snap=await db.collection('banners').orderBy('createdAt','desc').get();
+    const banners=snap.docs.map(d=>d.data());
+    const section=document.getElementById('dynamic-banners-section');
+    const row=document.getElementById('dynamic-banners-row');
+    if(banners.length){
+      row.innerHTML=banners.map(b=>`<div style="min-width:280px;border-radius:12px;overflow:hidden;cursor:pointer;position:relative;" onclick="showPage('${b.link||'shop'}')">
+        <img src="${b.imageUrl}" style="width:100%;height:140px;object-fit:cover;display:block;" alt="${b.title||''}">
+        ${b.title?`<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:white;padding:12px;font-weight:700;">${b.title}</div>`:''}
+      </div>`).join('');
+      section.classList.remove('hidden');
+    }
+  }catch(e){console.error('loadHomeBanners failed:',e);}
 }
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
   updateCartCount();
   loadFirestoreProducts();
-  renderFeatured();
   showHeroSlide(0);
   startHeroAutoplay();
   startFlashCountdown();
+  loadHomeBanners();
 });
 </script>
 <!-- Paystack (optional - add your public key when ready) -->
-<!-- <script src="https://js.paystack.co/v1/inline.js"></script> -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
 </body>
 </html>
