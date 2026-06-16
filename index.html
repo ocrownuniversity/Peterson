@@ -27,6 +27,9 @@
   --market-orange: #f57224;
   --market-orange-dark: #d65f17;
   --market-navy: #0d1b2e;
+  --ink: #15110f;
+  --ink-soft: #1f1a17;
+  --cream: #faf7f1;
   --font-display: 'Bebas Neue', sans-serif;
   --font-serif: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
@@ -38,7 +41,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--font-body);color:var(--black);background:var(--white);overflow-x:hidden;}
+body{font-family:var(--font-body);color:var(--black);background:var(--cream);overflow-x:hidden;}
 a{text-decoration:none;color:inherit;}
 img{max-width:100%;display:block;}
 button{cursor:pointer;border:none;font-family:var(--font-body);}
@@ -86,7 +89,7 @@ ul{list-style:none;}
 
 /* ===== TOASTS ===== */
 #toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;}
-.toast{background:var(--black);color:var(--white);padding:14px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;animation:slideIn 0.3s ease;box-shadow:var(--shadow-lg);max-width:300px;}
+.toast{background:var(--black);color:var(--white);padding:14px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;animation:slideIn 0.3s ease;box-shadow:var(--shadow-lg);max-width:380px;line-height:1.5;word-wrap:break-word;}
 .toast.success{border-left:4px solid #2d9e42;}
 .toast.error{border-left:4px solid var(--jersey-red);}
 .toast.info{border-left:4px solid #3b82f6;}
@@ -172,12 +175,23 @@ ul{list-style:none;}
 .page.active{display:block;}
 
 /* ===== QUICK CATEGORIES ===== */
-.quick-cats{padding:20px 0;border-bottom:1px solid var(--gray-200);margin-top:-1px;}
-.quick-cat-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;}
-.quick-cat{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:var(--transition);padding:10px 4px;border-radius:var(--radius);text-align:center;}
-.quick-cat:hover{background:var(--gray-100);transform:translateY(-2px);}
-.quick-cat-icon{width:54px;height:54px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:24px;}
-.quick-cat span{font-size:12px;font-weight:600;color:var(--gray-800);}
+.quick-cats{padding:40px 0;background:linear-gradient(135deg,var(--ink) 0%,#241a14 50%,var(--ink) 100%);border-top:1px solid var(--palm-gold);border-bottom:1px solid var(--palm-gold);}
+.trust-strip{background:linear-gradient(90deg,var(--jersey-red) 0%,var(--market-orange) 50%,var(--palm-green) 100%);padding:10px 0;}
+.trust-strip-inner{display:flex;justify-content:space-around;align-items:center;gap:16px;flex-wrap:wrap;}
+.trust-strip-item{display:flex;align-items:center;gap:6px;color:white;font-size:12px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+.trust-strip-item span{font-size:15px;}
+.quick-cat-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:12px;}
+.quick-cat{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:var(--transition);padding:16px 6px;border-radius:14px;text-align:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+.quick-cat:hover{transform:translateY(-4px);background:rgba(255,255,255,0.07);}
+.quick-cat:hover .quick-cat-icon{transform:scale(1.08);}
+.quick-cat-icon{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;transition:var(--transition);box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+.quick-cat:nth-child(1) .quick-cat-icon,.quick-cat:nth-child(3) .quick-cat-icon{background:linear-gradient(135deg,#e02020,#8a0f0f);}
+.quick-cat:nth-child(2) .quick-cat-icon{background:linear-gradient(135deg,#2d9e42,#0f4d1c);}
+.quick-cat:nth-child(4) .quick-cat-icon,.quick-cat:nth-child(6) .quick-cat-icon{background:linear-gradient(135deg,#2d9e42,#1a6b2a);}
+.quick-cat:nth-child(5) .quick-cat-icon{background:linear-gradient(135deg,#c8860a,#8a5c05);}
+.quick-cat:nth-child(7) .quick-cat-icon{background:linear-gradient(135deg,#f57224,#c44a0a);}
+.quick-cat:nth-child(8) .quick-cat-icon{background:linear-gradient(135deg,#7c3aed,#4527a0);}
+.quick-cat span{font-size:12px;font-weight:600;color:var(--cream);letter-spacing:0.2px;}
 
 /* ===== HOME HERO ===== */
 .hero{position:relative;background:var(--black);overflow:hidden;margin-top:0;padding-top:0;}
@@ -596,6 +610,8 @@ tr:hover td{background:var(--gray-100);}
 @media(max-width:480px){
   .products-grid{grid-template-columns:1fr;}
   .quick-cat-grid{grid-template-columns:repeat(3,1fr);}
+  .trust-strip-inner{justify-content:flex-start;gap:20px 28px;}
+  .trust-strip-item{font-size:11px;}
   .scroll-row .product-card{flex:0 0 160px;}
   .stat-cards{grid-template-columns:1fr;}
   .feature-grid{grid-template-columns:1fr;}
@@ -714,6 +730,15 @@ tr:hover td{background:var(--gray-100);}
 
 <!-- ========== HOME PAGE ========== -->
 <div class="page active" id="page-home">
+  <!-- TRUST STRIP -->
+  <section class="trust-strip">
+    <div class="container trust-strip-inner">
+      <div class="trust-strip-item"><span>✅</span> 100% Authentic</div>
+      <div class="trust-strip-item"><span>🚚</span> Nationwide Delivery</div>
+      <div class="trust-strip-item"><span>💳</span> Secure Checkout</div>
+      <div class="trust-strip-item"><span>⭐</span> 2,000+ Happy Customers</div>
+    </div>
+  </section>
   <!-- QUICK CATEGORIES -->
   <section class="quick-cats">
     <div class="container">
@@ -999,7 +1024,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur.</p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-16-3)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1549,6 +1574,9 @@ function showPage(page){
   if(navEl)navEl.classList.add('active');
   const wa=document.getElementById('whatsapp-float');
   if(wa)wa.classList.toggle('hidden',page==='admin');
+  const navbar=document.getElementById('navbar');
+  if(navbar)navbar.classList.toggle('hidden',page==='admin');
+  document.body.classList.toggle('admin-mode',page==='admin');
   // Page-specific init
   if(page==='shop')renderShop();
   if(page==='jerseys')renderJerseys();
@@ -1915,16 +1943,18 @@ auth.onAuthStateChanged(async user=>{
       if(snap.exists){
         isAdmin=snap.data().role==='admin';
         if(!isAdmin&&isDesignatedAdmin){
-          await ref.update({role:'admin'});
+          await ref.set({role:'admin'},{merge:true});
           isAdmin=true;
+          console.log('[admin self-heal] Upgraded',user.email,'to admin role.');
         }
       }else{
         isAdmin=isDesignatedAdmin;
-        await ref.set({name:user.displayName||'',email:user.email||'',phone:'',role:isDesignatedAdmin?'admin':'customer',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        await ref.set({name:user.displayName||'',email:user.email||'',phone:'',role:isDesignatedAdmin?'admin':'customer',createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
       }
+      console.log('[auth] signed in as',user.email,'isAdmin =',isAdmin);
     }catch(e){
       isAdmin=user.email&&user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase();
-      console.error('Firestore role check failed — check security rules:',e);
+      console.error('[admin self-heal] Firestore role check/write failed — check security rules in Firebase console. isAdmin fallback =',isAdmin,e);
     }
     if(authBtn){authBtn.textContent='👤';authBtn.title=user.displayName||user.email;}
     if(mobileAuth)mobileAuth.textContent=isAdmin?'🔧 Admin Panel':'My Account';
@@ -1957,7 +1987,16 @@ function showAccountTab(tab){
   });
   const content=document.getElementById('account-content');
   if(tab==='dashboard'){
-    content.innerHTML=`<h2>WELCOME BACK</h2>
+    const isDesignatedAdmin=currentUser?.email&&currentUser.email.toLowerCase()===ADMIN_EMAIL.toLowerCase();
+    content.innerHTML=`${isAdmin?`<div style="background:var(--black);color:white;padding:16px 20px;border-radius:var(--radius);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <span>🔧 You have admin access on this account.</span>
+      <button class="btn btn-sm" style="background:var(--market-orange);color:white;" onclick="showPage('admin')">Open Admin Panel</button>
+    </div>`:(isDesignatedAdmin?`<div style="background:#fff3e0;border:1px solid #f5c542;color:#7a5500;padding:16px 20px;border-radius:var(--radius);margin-bottom:20px;">
+      <strong>⚠️ This is your designated admin email, but admin access wasn't granted.</strong>
+      <p style="margin:8px 0;font-size:13px;">This usually means Firestore security rules blocked the write. Tap below to retry, or check the browser console (F12) for the exact error.</p>
+      <button class="btn btn-sm" style="background:var(--black);color:white;" onclick="fixMyAdminAccess()" id="fix-admin-btn">Fix My Admin Access</button>
+    </div>`:'')}
+      <h2>WELCOME BACK</h2>
       <p style="color:var(--gray-600);margin-bottom:32px;">Hello, ${currentUser?.displayName||'Customer'} 👋</p>
       <div class="stat-cards" style="grid-template-columns:repeat(3,1fr);">
         <div class="stat-card"><div class="stat-icon" style="background:#ffe0e0;">📦</div><div class="stat-num" id="order-count">...</div><div class="stat-label">Total Orders</div></div>
@@ -1973,6 +2012,22 @@ function showAccountTab(tab){
       <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="profile-name" value="${currentUser?.displayName||''}"></div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-control" value="${currentUser?.email||''}" disabled></div>
       <button class="btn btn-primary" onclick="updateProfile()">Save Changes</button>`;
+  }
+}
+async function fixMyAdminAccess(){
+  if(!currentUser){showToast('Please sign in first','error');return;}
+  if(currentUser.email.toLowerCase()!==ADMIN_EMAIL.toLowerCase()){showToast('This account is not the designated admin email','error');return;}
+  const btn=document.getElementById('fix-admin-btn');
+  if(btn){btn.disabled=true;btn.textContent='Fixing...';}
+  try{
+    await db.collection('users').doc(currentUser.uid).set({role:'admin',email:currentUser.email,name:currentUser.displayName||''},{merge:true});
+    isAdmin=true;
+    showToast('Admin access granted! Opening admin panel...','success');
+    setTimeout(()=>showPage('admin'),800);
+  }catch(e){
+    console.error('[fixMyAdminAccess] failed:',e);
+    showToast('Could not write to Firestore: '+(e.message||'unknown error')+'. This means your Firestore security rules are blocking writes to the users collection — open your Firebase console > Firestore Database > Rules and allow authenticated users to write their own user document.','error');
+    if(btn){btn.disabled=false;btn.textContent='Fix My Admin Access';}
   }
 }
 async function loadUserOrderStats(){
@@ -2737,7 +2792,9 @@ function showToast(msg,type='info'){
   const c=document.getElementById('toast-container');
   const t=document.createElement('div');
   t.className=`toast ${type}`;t.textContent=msg;
-  c.appendChild(t);setTimeout(()=>t.remove(),4000);
+  c.appendChild(t);
+  const duration=Math.min(12000,Math.max(4000,msg.length*60));
+  setTimeout(()=>t.remove(),duration);
 }
 
 // ===== SCROLL EFFECT =====
