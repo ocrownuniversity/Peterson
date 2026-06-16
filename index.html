@@ -24,10 +24,14 @@
   --gray-400: #a0a0a0;
   --gray-600: #666;
   --gray-800: #333;
+  --market-orange: #f57224;
+  --market-orange-dark: #d65f17;
+  --market-navy: #0d1b2e;
   --font-display: 'Bebas Neue', sans-serif;
   --font-serif: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
   --radius: 8px;
+  --radius-sm: 4px;
   --shadow: 0 4px 24px rgba(0,0,0,0.08);
   --shadow-lg: 0 12px 48px rgba(0,0,0,0.15);
   --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
@@ -110,60 +114,118 @@ ul{list-style:none;}
 
 /* ===== NAVBAR ===== */
 #navbar{position:fixed;top:0;width:100%;z-index:500;transition:var(--transition);}
-.nav-top{background:var(--black);padding:8px 0;}
+.nav-top{background:var(--market-navy);padding:7px 0;}
 .nav-top-inner{display:flex;justify-content:space-between;align-items:center;}
-.nav-top-info{display:flex;gap:20px;font-size:12px;color:var(--gray-400);}
+.nav-top-info{display:flex;gap:20px;font-size:12px;color:rgba(255,255,255,0.6);}
 .nav-top-info span{display:flex;align-items:center;gap:4px;}
 .nav-top-links{display:flex;gap:16px;}
-.nav-top-links a{font-size:12px;color:var(--gray-400);transition:color 0.2s;}
+.nav-top-links a{font-size:12px;color:rgba(255,255,255,0.6);transition:color 0.2s;}
 .nav-top-links a:hover{color:var(--white);}
-.nav-main{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 0;}
-.nav-main-inner{display:flex;align-items:stretch;justify-content:space-between;height:68px;}
-.nav-logo{display:flex;align-items:center;gap:10px;}
-.nav-logo-mark{width:42px;height:42px;background:var(--black);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.nav-main{background:var(--white);border-bottom:1px solid var(--gray-200);padding:14px 0;}
+.nav-main-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.nav-logo-mark{width:42px;height:42px;background:var(--market-orange);border-radius:8px;display:flex;align-items:center;justify-content:center;}
 .nav-logo-mark span{color:var(--white);font-family:var(--font-display);font-size:22px;letter-spacing:1px;}
 .nav-logo-text{display:flex;flex-direction:column;line-height:1.1;}
 .nav-logo-text .name{font-family:var(--font-display);font-size:22px;letter-spacing:2px;}
 .nav-logo-text .tagline{font-size:9px;color:var(--gray-400);letter-spacing:3px;text-transform:uppercase;}
+.nav-search{flex:1;max-width:620px;}
+.nav-search-form{display:flex;height:44px;border:2px solid var(--market-navy);border-radius:var(--radius-sm);overflow:hidden;}
+.nav-search-form input{flex:1;border:none;padding:0 16px;font-size:14px;outline:none;min-width:0;}
+.nav-search-form button{width:52px;flex-shrink:0;background:var(--market-orange);color:var(--white);font-size:18px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;transition:var(--transition);}
+.nav-search-form button:hover{background:var(--market-orange-dark);}
 .nav-links{display:flex;align-items:center;gap:2px;}
 .nav-links a{padding:0 16px;height:68px;display:flex;align-items:center;font-size:14px;font-weight:500;color:var(--gray-800);border-bottom:3px solid transparent;transition:var(--transition);}
 .nav-links a:hover,.nav-links a.active{color:var(--black);border-bottom-color:var(--black);}
 .nav-links a.jersey-link:hover,.nav-links a.jersey-link.active{border-bottom-color:var(--jersey-red);color:var(--jersey-red);}
 .nav-links a.palm-link:hover,.nav-links a.palm-link.active{border-bottom-color:var(--palm-green);color:var(--palm-green);}
-.nav-actions{display:flex;align-items:center;gap:8px;}
+.nav-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .nav-icon-btn{width:40px;height:40px;border-radius:var(--radius);background:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gray-800);transition:var(--transition);cursor:pointer;position:relative;}
 .nav-icon-btn:hover{background:var(--gray-100);}
+.mobile-search-icon{display:none;}
 .cart-badge{position:absolute;top:4px;right:4px;background:var(--jersey-red);color:var(--white);width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .nav-mobile-toggle{display:none;background:none;font-size:22px;padding:8px;cursor:pointer;}
 .nav-mobile{display:none;background:var(--white);border-top:1px solid var(--gray-200);padding:16px 20px;}
 .nav-mobile a{display:block;padding:12px 0;font-size:15px;font-weight:500;border-bottom:1px solid var(--gray-100);}
 #navbar.scrolled .nav-main{box-shadow:var(--shadow);}
 
+/* ===== CATEGORY STRIP ===== */
+.category-strip{background:var(--market-navy);}
+.category-strip-inner{display:flex;align-items:stretch;gap:2px;height:44px;overflow-x:auto;scrollbar-width:none;}
+.category-strip-inner::-webkit-scrollbar{display:none;}
+.strip-all{display:flex;align-items:center;gap:8px;white-space:nowrap;background:var(--market-orange);color:var(--white);font-size:13px;font-weight:700;padding:0 16px;cursor:pointer;border:none;transition:var(--transition);}
+.strip-all:hover{background:var(--market-orange-dark);}
+.category-strip a{white-space:nowrap;color:rgba(255,255,255,0.8);font-size:13px;font-weight:500;padding:0 14px;height:44px;display:flex;align-items:center;border-bottom:3px solid transparent;transition:var(--transition);}
+.category-strip a:hover,.category-strip a.active{color:var(--white);border-bottom-color:var(--market-orange);}
+.category-strip a.jersey-link:hover,.category-strip a.jersey-link.active{border-bottom-color:var(--jersey-red);}
+.category-strip a.palm-link:hover,.category-strip a.palm-link.active{border-bottom-color:var(--palm-light);}
+.category-dropdown{position:relative;}
+.category-dropdown-panel{position:absolute;top:100%;left:0;background:var(--white);width:260px;border-radius:0 0 8px 8px;box-shadow:var(--shadow-lg);padding:8px;z-index:50;opacity:0;pointer-events:none;transform:translateY(-6px);transition:var(--transition);}
+.category-dropdown-panel.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.category-dropdown-panel a{display:flex;align-items:center;gap:10px;padding:11px 12px;font-size:14px;color:var(--black);border-radius:6px;height:auto;border-bottom:none!important;}
+.category-dropdown-panel a:hover{background:var(--gray-100);}
+
 /* ===== PAGES ===== */
-.page{display:none;min-height:100vh;padding-top:110px;}
+.page{display:none;min-height:100vh;padding-top:154px;}
 .page.active{display:block;}
 
+/* ===== QUICK CATEGORIES ===== */
+.quick-cats{padding:20px 0;border-bottom:1px solid var(--gray-200);margin-top:-1px;}
+.quick-cat-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;}
+.quick-cat{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:var(--transition);padding:10px 4px;border-radius:var(--radius);text-align:center;}
+.quick-cat:hover{background:var(--gray-100);transform:translateY(-2px);}
+.quick-cat-icon{width:54px;height:54px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.quick-cat span{font-size:12px;font-weight:600;color:var(--gray-800);}
+
 /* ===== HOME HERO ===== */
-.hero{position:relative;min-height:90vh;background:var(--black);display:flex;align-items:center;overflow:hidden;margin-top:-110px;padding-top:110px;}
+.hero{position:relative;background:var(--black);overflow:hidden;margin-top:0;padding-top:0;}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a0a14 40%,#0a1a0a 100%);}
 .hero-bg::before{content:'';position:absolute;top:-50%;right:-20%;width:700px;height:700px;background:radial-gradient(circle,rgba(224,32,32,0.15) 0%,transparent 70%);}
 .hero-bg::after{content:'';position:absolute;bottom:-30%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(26,107,42,0.15) 0%,transparent 70%);}
-.hero-content{position:relative;z-index:2;color:var(--white);max-width:650px;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:8px 16px;border-radius:24px;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;backdrop-filter:blur(10px);}
-.hero-badge::before{content:'';width:6px;height:6px;background:var(--palm-light);border-radius:50%;animation:pulse 2s infinite;}
+.hero-banner-grid{position:relative;z-index:2;display:grid;grid-template-columns:2fr 1fr;gap:20px;padding:40px 0;}
+.hero-carousel{position:relative;min-height:440px;border-radius:12px;overflow:hidden;}
+.hero-slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 8px;max-width:560px;color:var(--white);opacity:0;pointer-events:none;transition:opacity 0.6s ease;}
+.hero-slide.active{opacity:1;pointer-events:all;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:8px 16px;border-radius:24px;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px;backdrop-filter:blur(10px);width:fit-content;}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--palm-light);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0;}
+.hero-badge.badge-red-bg{background:rgba(224,32,32,0.15);border-color:rgba(224,32,32,0.35);color:#ffb3b3;}
+.hero-badge.badge-red-bg::before{background:var(--jersey-red);}
+.hero-badge.badge-green-bg{background:rgba(26,107,42,0.18);border-color:rgba(26,107,42,0.4);color:#a3f0b5;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.5);}}
-.hero h1{font-family:var(--font-display);font-size:clamp(56px,9vw,110px);line-height:0.9;letter-spacing:3px;margin-bottom:24px;}
+.hero .hero-slide h1{font-family:var(--font-display);font-size:clamp(34px,4.6vw,62px);line-height:0.95;letter-spacing:2px;margin-bottom:20px;}
 .hero h1 span{display:block;}
 .hero h1 .accent-red{color:var(--jersey-red);}
 .hero h1 .accent-green{color:var(--palm-light);}
-.hero-desc{font-size:18px;color:rgba(255,255,255,0.65);line-height:1.7;margin-bottom:40px;max-width:480px;}
+.hero-desc{font-size:16px;color:rgba(255,255,255,0.65);line-height:1.7;margin-bottom:28px;max-width:460px;}
 .hero-ctas{display:flex;gap:16px;flex-wrap:wrap;}
-.hero-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:2px;text-transform:uppercase;}
-.hero-scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(255,255,255,0.4),transparent);animation:scrollLine 1.5s ease-in-out infinite;}
-@keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
-.hero-stats{display:flex;gap:40px;margin-top:48px;}
-.hero-stat .num{font-family:var(--font-display);font-size:36px;letter-spacing:2px;color:var(--white);}
-.hero-stat .label{font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;}
+.hero-dots{position:absolute;bottom:18px;left:8px;display:flex;gap:8px;z-index:5;}
+.hero-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:var(--transition);}
+.hero-dot.active{background:var(--market-orange);width:22px;border-radius:4px;}
+.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.1);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;z-index:5;transition:var(--transition);}
+.hero-arrow:hover{background:rgba(255,255,255,0.25);}
+.hero-arrow.prev{left:12px;}
+.hero-arrow.next{right:12px;}
+.hero-side{display:flex;flex-direction:column;gap:16px;}
+.promo-tile{flex:1;border-radius:12px;padding:26px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;transition:var(--transition);min-height:212px;}
+.promo-tile:hover{transform:translateY(-2px);}
+.promo-tile.jersey{background:linear-gradient(135deg,#3d0a0a,#1a0505);}
+.promo-tile.palm{background:linear-gradient(135deg,#0d3318,#0a1a0d);}
+.promo-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:10px;}
+.promo-tile h4{font-family:var(--font-display);font-size:25px;color:var(--white);letter-spacing:1px;line-height:1.15;margin-bottom:14px;}
+.promo-link{color:var(--market-orange);font-size:13px;font-weight:700;}
+
+/* ===== FLASH SALE ===== */
+.flash-sale{padding:40px 0;background:var(--market-navy);}
+.flash-sale-header{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
+.flash-sale-title{display:flex;align-items:center;gap:10px;}
+.flash-icon{font-size:26px;}
+.flash-sale-title h2{font-family:var(--font-display);font-size:32px;letter-spacing:2px;color:var(--white);}
+.flash-timer{background:rgba(255,255,255,0.08);color:var(--white);font-size:13px;padding:8px 16px;border-radius:20px;}
+.flash-timer span{font-weight:700;color:var(--market-orange);font-family:var(--font-display);letter-spacing:1px;}
+.scroll-row{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin;}
+.scroll-row::-webkit-scrollbar{height:6px;}
+.scroll-row::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:4px;}
+.scroll-row .product-card{flex:0 0 220px;}
 
 /* ===== CATEGORIES ===== */
 .categories{padding:80px 0;background:var(--gray-100);}
@@ -183,22 +245,23 @@ ul{list-style:none;}
 .cat-card.palm .btn{background:var(--palm-green);}
 
 /* ===== PRODUCT CARD ===== */
-.product-card{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);transition:var(--transition);position:relative;}
-.product-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+.product-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-sm);overflow:hidden;transition:var(--transition);position:relative;cursor:pointer;}
+.product-card:hover{border-color:var(--gray-400);box-shadow:var(--shadow);}
 .product-card-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--gray-100);}
-.product-card-img-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:72px;background:linear-gradient(135deg,var(--gray-100),var(--gray-200));}
-.product-card-body{padding:16px;}
+.product-card-img-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(135deg,var(--gray-100),var(--gray-200));}
+.product-card-body{padding:12px;}
 .product-card-cat{font-size:11px;color:var(--gray-400);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.product-card-name{font-weight:700;font-size:15px;margin-bottom:4px;line-height:1.3;}
-.product-card-desc{font-size:13px;color:var(--gray-600);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.product-card-name{font-weight:500;font-size:13px;margin-bottom:8px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px;}
+.product-card-desc{display:none;}
 .product-card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.product-price{font-family:var(--font-display);font-size:22px;letter-spacing:1px;}
-.product-price .old{font-size:13px;color:var(--gray-400);text-decoration:line-through;font-family:var(--font-body);font-weight:400;}
-.product-badge{position:absolute;top:12px;left:12px;}
+.product-price{font-family:var(--font-body);font-weight:700;font-size:16px;letter-spacing:0;color:var(--market-orange-dark);}
+.product-price .old{display:block;font-size:12px;color:var(--gray-400);text-decoration:line-through;font-weight:400;}
+.product-badge{position:absolute;top:0;left:0;}
+.product-badge .badge{border-radius:0 0 6px 0;background:var(--market-orange);color:var(--white);}
 .product-card-actions{display:flex;gap:8px;margin-top:12px;}
-.wishlist-btn{width:36px;height:36px;border-radius:var(--radius);background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:var(--transition);}
-.wishlist-btn:hover{background:var(--gray-200);}
-.stars{display:flex;gap:2px;font-size:13px;}
+.wishlist-btn{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:var(--transition);flex-shrink:0;}
+.wishlist-btn:hover{background:var(--market-orange);color:var(--white);}
+.stars{display:flex;gap:1px;font-size:11px;}
 .stars .filled{color:#f59e0b;}
 .stars .empty{color:var(--gray-200);}
 
@@ -246,6 +309,9 @@ footer{background:var(--black);padding:64px 0 0;}
 .social-btn{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:var(--gray-400);font-size:16px;transition:var(--transition);}
 .social-btn:hover{background:rgba(255,255,255,0.15);color:var(--white);}
 .footer-col h5{color:var(--white);font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;}
+.footer-trust{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:48px;padding:24px 0;border-top:1px solid rgba(255,255,255,0.08);}
+.footer-trust-payments,.footer-trust-badges{display:flex;gap:10px;flex-wrap:wrap;}
+.trust-tag{background:rgba(255,255,255,0.06);color:var(--gray-400);font-size:12px;padding:8px 14px;border-radius:20px;white-space:nowrap;}
 .footer-col ul li{margin-bottom:10px;}
 .footer-col ul li a{color:var(--gray-400);font-size:14px;transition:color 0.2s;}
 .footer-col ul li a:hover{color:var(--white);}
@@ -262,7 +328,7 @@ footer{background:var(--black);padding:64px 0 0;}
 .shop-header h1{font-family:var(--font-display);font-size:clamp(40px,6vw,64px);letter-spacing:2px;}
 .shop-header p{color:var(--gray-600);}
 .shop-layout{display:grid;grid-template-columns:260px 1fr;gap:32px;padding:48px 0;}
-.shop-sidebar{position:sticky;top:130px;align-self:start;}
+.shop-sidebar{position:sticky;top:174px;align-self:start;}
 .sidebar-section{background:var(--white);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:var(--shadow);}
 .sidebar-section h4{font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
 .filter-option{display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;}
@@ -273,7 +339,7 @@ footer{background:var(--black);padding:64px 0 0;}
 .shop-main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
 .shop-count{color:var(--gray-600);font-size:14px;}
 .sort-select{padding:10px 16px;border:2px solid var(--gray-200);border-radius:var(--radius);font-size:14px;outline:none;cursor:pointer;}
-.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
 .search-bar{display:flex;gap:12px;margin-bottom:24px;}
 .search-bar input{flex:1;padding:12px 20px;border:2px solid var(--gray-200);border-radius:var(--radius);font-size:14px;outline:none;transition:var(--transition);}
 .search-bar input:focus{border-color:var(--black);}
@@ -281,7 +347,7 @@ footer{background:var(--black);padding:64px 0 0;}
 /* ===== PRODUCT DETAIL ===== */
 .product-detail{padding:48px 0;}
 .product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
-.product-images{position:sticky;top:130px;}
+.product-images{position:sticky;top:174px;}
 .product-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:120px;}
 .product-thumbs{display:flex;gap:12px;margin-top:12px;}
 .product-thumb{width:72px;height:72px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:var(--transition);}
@@ -359,7 +425,7 @@ footer{background:var(--black);padding:64px 0 0;}
 
 /* ===== ACCOUNT ===== */
 .account-layout{display:grid;grid-template-columns:240px 1fr;gap:32px;padding:48px 0;}
-.account-sidebar{position:sticky;top:130px;align-self:start;}
+.account-sidebar{position:sticky;top:174px;align-self:start;}
 .account-menu{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
 .account-menu a{display:flex;align-items:center;gap:12px;padding:16px 20px;font-size:14px;font-weight:500;border-bottom:1px solid var(--gray-100);transition:var(--transition);}
 .account-menu a:last-child{border-bottom:none;}
@@ -469,6 +535,9 @@ tr:hover td{background:var(--gray-100);}
   .grid-4{grid-template-columns:repeat(2,1fr);}
   .feature-grid{grid-template-columns:repeat(2,1fr);}
   .footer-grid{grid-template-columns:1fr 1fr;}
+  .quick-cat-grid{grid-template-columns:repeat(4,1fr);}
+  .hero-banner-grid{grid-template-columns:1fr;}
+  .hero-side{flex-direction:row;}
   .shop-layout{grid-template-columns:1fr;}
   .shop-sidebar{position:static;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
   .checkout-grid{grid-template-columns:1fr;}
@@ -478,22 +547,28 @@ tr:hover td{background:var(--gray-100);}
   .admin-sidebar{display:none;}
   .admin-main{margin-left:0;}
   .stat-cards{grid-template-columns:repeat(2,1fr);}
-  .products-grid{grid-template-columns:repeat(2,1fr);}
+  .products-grid{grid-template-columns:repeat(3,1fr);}
   .product-detail-grid{grid-template-columns:1fr;}
   .product-images{position:static;}
   .review-grid{grid-template-columns:1fr 1fr;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
+  .nav-search{display:none;}
+  .mobile-search-icon{display:flex;}
+  .category-strip{display:none;}
   .nav-mobile-toggle{display:block;}
   .nav-top-info{display:none;}
+  .hero-carousel{min-height:380px;}
+  .hero-side{flex-direction:column;}
+  .quick-cat-grid{grid-template-columns:repeat(4,1fr);}
+  .quick-cat span{font-size:11px;}
   .category-grid{grid-template-columns:1fr;}
   .cat-card{height:300px;}
   .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
   .mvv-grid{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr;}
-  .hero-stats{gap:24px;}
-  .hero-stat .num{font-size:28px;}
+  .flash-sale-header{justify-content:flex-start;}
   .newsletter-form{flex-direction:column;}
   .review-grid{grid-template-columns:1fr;}
   .footer-bottom{flex-direction:column;gap:12px;text-align:center;}
@@ -507,6 +582,8 @@ tr:hover td{background:var(--gray-100);}
 }
 @media(max-width:480px){
   .products-grid{grid-template-columns:1fr;}
+  .quick-cat-grid{grid-template-columns:repeat(3,1fr);}
+  .scroll-row .product-card{flex:0 0 160px;}
   .stat-cards{grid-template-columns:1fr;}
   .feature-grid{grid-template-columns:1fr;}
   .payment-methods{grid-template-columns:1fr;}
@@ -541,15 +618,14 @@ tr:hover td{background:var(--gray-100);}
           <span class="tagline">The Serial Entrepreneur</span>
         </div>
       </div>
-      <div class="nav-links">
-        <a href="#" onclick="showPage('home')" class="active" id="nav-home">Home</a>
-        <a href="#" onclick="showPage('shop')" id="nav-shop">Shop</a>
-        <a href="#" onclick="showPage('jerseys')" class="jersey-link" id="nav-jerseys">Jerseys</a>
-        <a href="#" onclick="showPage('palmoil')" class="palm-link" id="nav-palmoil">Palm Oil</a>
-        <a href="#" onclick="showPage('about')" id="nav-about">About</a>
+      <div class="nav-search">
+        <div class="nav-search-form">
+          <input type="text" id="header-search" placeholder="Search jerseys, palm oil and more..." onkeydown="if(event.key==='Enter')performHeaderSearch()">
+          <button onclick="performHeaderSearch()" title="Search">&#128269;</button>
+        </div>
       </div>
       <div class="nav-actions">
-        <button class="nav-icon-btn" onclick="showPage('shop')" title="Search">&#128269;</button>
+        <button class="nav-icon-btn mobile-search-icon" onclick="showPage('shop')" title="Search">&#128269;</button>
         <button class="nav-icon-btn" onclick="toggleCart()" title="Cart" id="cart-btn">
           &#128722;
           <span class="cart-badge hidden" id="cart-count">0</span>
@@ -565,6 +641,28 @@ tr:hover td{background:var(--gray-100);}
       <a href="#" onclick="showPage('palmoil');toggleMobileNav()">Peterson Palm Oil</a>
       <a href="#" onclick="showPage('about');toggleMobileNav()">About Us</a>
       <a href="#" onclick="handleAuthNav();toggleMobileNav()" id="mobile-auth-link">My Account</a>
+    </div>
+  </div>
+  <div class="category-strip">
+    <div class="container category-strip-inner">
+      <div class="category-dropdown">
+        <button class="strip-all" onclick="toggleCategoryMenu()">&#9776; All Categories &#9662;</button>
+        <div class="category-dropdown-panel" id="category-menu">
+          <a href="#" onclick="showPage('jerseys');toggleCategoryMenu()">&#9917; Club Jerseys</a>
+          <a href="#" onclick="showPage('jerseys');toggleCategoryMenu()">&#127758; National Team Kits</a>
+          <a href="#" onclick="showPage('jerseys');toggleCategoryMenu()">&#127939; Training Wear</a>
+          <a href="#" onclick="showPage('palmoil');toggleCategoryMenu()">&#129753; Palm Oil</a>
+          <a href="#" onclick="showPage('palmoil');toggleCategoryMenu()">&#128230; Bulk &amp; Wholesale</a>
+          <a href="#" onclick="showPage('shop');toggleCategoryMenu()">&#128722; Shop All Products</a>
+        </div>
+      </div>
+      <a href="#" onclick="showPage('home')" class="active" id="nav-home">Home</a>
+      <a href="#" onclick="showPage('shop')" id="nav-shop">Shop All</a>
+      <a href="#" onclick="showPage('jerseys')" class="jersey-link" id="nav-jerseys">Jerseys</a>
+      <a href="#" onclick="showPage('palmoil')" class="palm-link" id="nav-palmoil">Palm Oil</a>
+      <a href="#" onclick="scrollToFlashSale()" style="color:var(--market-orange);font-weight:700;">&#128293; Flash Sales</a>
+      <a href="#" onclick="showPage('about')" id="nav-about">About</a>
+      <a href="#" onclick="showPage('delivery')">Track Order</a>
     </div>
   </div>
 </nav>
@@ -598,31 +696,95 @@ tr:hover td{background:var(--gray-100);}
 
 <!-- ========== HOME PAGE ========== -->
 <div class="page active" id="page-home">
-  <!-- HERO -->
+  <!-- QUICK CATEGORIES -->
+  <section class="quick-cats">
+    <div class="container">
+      <div class="quick-cat-grid">
+        <div class="quick-cat" onclick="showPage('jerseys')"><div class="quick-cat-icon">&#9917;</div><span>Club Jerseys</span></div>
+        <div class="quick-cat" onclick="showPage('jerseys')"><div class="quick-cat-icon">&#127758;</div><span>National Team</span></div>
+        <div class="quick-cat" onclick="showPage('jerseys')"><div class="quick-cat-icon">&#127939;</div><span>Training Wear</span></div>
+        <div class="quick-cat" onclick="showPage('palmoil')"><div class="quick-cat-icon">&#129753;</div><span>Palm Oil</span></div>
+        <div class="quick-cat" onclick="showPage('palmoil')"><div class="quick-cat-icon">&#127873;</div><span>Gift Packs</span></div>
+        <div class="quick-cat" onclick="showPage('palmoil')"><div class="quick-cat-icon">&#128230;</div><span>Bulk Orders</span></div>
+        <div class="quick-cat" onclick="scrollToFlashSale()"><div class="quick-cat-icon">&#128293;</div><span>Flash Sales</span></div>
+        <div class="quick-cat" onclick="showPage('shop')"><div class="quick-cat-icon">&#10024;</div><span>New Arrivals</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HERO BANNER -->
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="container">
-      <div class="hero-content">
-        <div class="hero-badge">&#127942; The Serial Entrepreneur</div>
-        <h1>
-          <span>PREMIUM</span>
-          <span class="accent-red">QUALITY</span>
-          <span class="accent-green">PRODUCTS</span>
-        </h1>
-        <p class="hero-desc">From elite sportswear to pure natural palm oil &mdash; Peterson brings quality to every aspect of your life. Trusted. Premium. Delivered.</p>
-        <div class="hero-ctas">
-          <button class="btn btn-red" onclick="showPage('jerseys')">&#9917; Shop Jerseys</button>
-          <button class="btn btn-green" onclick="showPage('palmoil')">&#127807; Shop Palm Oil</button>
-          <button class="btn btn-outline-white" onclick="showPage('shop')">Browse All</button>
+      <div class="hero-banner-grid">
+        <div class="hero-carousel">
+          <div class="hero-slide active">
+            <div class="hero-badge">&#127942; The Serial Entrepreneur</div>
+            <h1>
+              <span>PREMIUM</span>
+              <span class="accent-red">QUALITY</span>
+              <span class="accent-green">PRODUCTS</span>
+            </h1>
+            <p class="hero-desc">From elite sportswear to pure natural palm oil &mdash; Peterson brings quality to every aspect of your life. Trusted. Premium. Delivered.</p>
+            <div class="hero-ctas">
+              <button class="btn btn-red" onclick="showPage('jerseys')">&#9917; Shop Jerseys</button>
+              <button class="btn btn-green" onclick="showPage('palmoil')">&#127807; Shop Palm Oil</button>
+            </div>
+          </div>
+          <div class="hero-slide">
+            <div class="hero-badge badge-red-bg">&#128293; Up To 30% Off</div>
+            <h1>
+              <span>JERSEY</span>
+              <span class="accent-red">SEASON</span>
+              <span>SALE</span>
+            </h1>
+            <p class="hero-desc">Authentic-style club &amp; national team jerseys at prices that won't get red-carded.</p>
+            <div class="hero-ctas"><button class="btn btn-red" onclick="showPage('jerseys')">Shop The Sale &rarr;</button></div>
+          </div>
+          <div class="hero-slide">
+            <div class="hero-badge badge-green-bg">&#127794; Farm Fresh</div>
+            <h1>
+              <span>PURE</span>
+              <span class="accent-green">PALM OIL</span>
+              <span>DELIVERED</span>
+            </h1>
+            <p class="hero-desc">Cold-pressed, additive-free palm oil &mdash; from 1 litre bottles to 25L bulk drums.</p>
+            <div class="hero-ctas"><button class="btn btn-green" onclick="showPage('palmoil')">Shop Palm Oil &rarr;</button></div>
+          </div>
+          <div class="hero-dots">
+            <span class="hero-dot active" onclick="showHeroSlide(0)"></span>
+            <span class="hero-dot" onclick="showHeroSlide(1)"></span>
+            <span class="hero-dot" onclick="showHeroSlide(2)"></span>
+          </div>
+          <button class="hero-arrow prev" onclick="heroPrev()">&#10094;</button>
+          <button class="hero-arrow next" onclick="heroNext()">&#10095;</button>
         </div>
-        <div class="hero-stats">
-          <div class="hero-stat"><div class="num">500+</div><div class="label">Products</div></div>
-          <div class="hero-stat"><div class="num">2K+</div><div class="label">Customers</div></div>
-          <div class="hero-stat"><div class="num">100%</div><div class="label">Authentic</div></div>
+        <div class="hero-side">
+          <div class="promo-tile jersey" onclick="showPage('jerseys')">
+            <span class="promo-eyebrow">Sportswear</span>
+            <h4>New Club Kits<br>In Stock</h4>
+            <span class="promo-link">Shop now &rarr;</span>
+          </div>
+          <div class="promo-tile palm" onclick="showPage('palmoil')">
+            <span class="promo-eyebrow">Natural &amp; Fresh</span>
+            <h4>Palm Oil<br>Bulk Pricing</h4>
+            <span class="promo-link">Shop now &rarr;</span>
+          </div>
         </div>
       </div>
     </div>
-    <div class="hero-scroll"><div class="hero-scroll-line"></div><span>Scroll</span></div>
+  </section>
+
+  <!-- FLASH SALE -->
+  <section class="flash-sale" id="flash-sale">
+    <div class="container">
+      <div class="flash-sale-header">
+        <div class="flash-sale-title"><span class="flash-icon">&#128293;</span><h2>FLASH SALES</h2></div>
+        <div class="flash-timer">Ends in <span id="flash-countdown">00:00:00</span></div>
+        <button class="btn btn-sm btn-outline-white" onclick="showPage('shop')">See All &rarr;</button>
+      </div>
+      <div class="scroll-row" id="flash-products"></div>
+    </div>
   </section>
 
   <!-- CATEGORIES -->
@@ -774,22 +936,23 @@ tr:hover td{background:var(--gray-100);}
           </div>
         </div>
         <div class="footer-col">
-          <h5>Quick Links</h5>
+          <h5>Categories</h5>
           <ul>
-            <li><a href="#" onclick="showPage('home')">Home</a></li>
             <li><a href="#" onclick="showPage('shop')">Shop All</a></li>
-            <li><a href="#" onclick="showPage('jerseys')">Jerseys</a></li>
+            <li><a href="#" onclick="showPage('jerseys')">Club Jerseys</a></li>
+            <li><a href="#" onclick="showPage('jerseys')">National Team Kits</a></li>
             <li><a href="#" onclick="showPage('palmoil')">Palm Oil</a></li>
-            <li><a href="#" onclick="showPage('about')">About Us</a></li>
+            <li><a href="#" onclick="showPage('palmoil')">Bulk &amp; Wholesale</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h5>Support</h5>
+          <h5>Customer Service</h5>
           <ul>
             <li><a href="#" onclick="showPage('delivery')">Delivery Info</a></li>
             <li><a href="#" onclick="showPage('terms')">Terms of Service</a></li>
             <li><a href="#" onclick="showPage('privacy')">Privacy Policy</a></li>
             <li><a href="#" onclick="showPage('contact')">Contact Us</a></li>
+            <li><a href="#" onclick="showPage('about')">About Peterson</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -797,6 +960,17 @@ tr:hover td{background:var(--gray-100);}
           <div class="footer-contact-item"><span>&#128231;</span><span>olakunlep62@gmail.com</span></div>
           <div class="footer-contact-item"><span>&#128222;</span><span>09033992088<br>07032469913</span></div>
           <div class="footer-contact-item"><span>&#128172;</span><span><a href="https://wa.me/2349033992088" style="color:var(--gray-400)">WhatsApp Us</a></span></div>
+        </div>
+      </div>
+      <div class="footer-trust">
+        <div class="footer-trust-payments">
+          <span class="trust-tag">&#127974; Bank Transfer</span>
+          <span class="trust-tag">&#128179; Card Payment</span>
+          <span class="trust-tag">&#128176; Pay On Delivery</span>
+        </div>
+        <div class="footer-trust-badges">
+          <span class="trust-tag">&#9989; Secure Checkout</span>
+          <span class="trust-tag">&#128666; Nationwide Delivery</span>
         </div>
       </div>
       <div class="footer-bottom">
@@ -949,7 +1123,7 @@ tr:hover td{background:var(--gray-100);}
       </div>
 
       <div>
-        <div class="checkout-section" style="position:sticky;top:130px;">
+        <div class="checkout-section" style="position:sticky;top:174px;">
           <h3>ORDER SUMMARY</h3>
           <div id="checkout-items"></div>
           <div id="checkout-totals"></div>
@@ -1347,6 +1521,7 @@ function getProducts(){return allProducts.length?allProducts:sampleProducts;}
 function renderFeatured(){
   const featured=getProducts().filter(p=>p.featured).slice(0,6);
   document.getElementById('featured-products').innerHTML=featured.map(createProductCard).join('');
+  renderFlashSale();
 }
 function renderJerseys(){
   const jerseys=getProducts().filter(p=>p.cat==='jersey');
@@ -1987,6 +2162,69 @@ function toggleMobileNav(){
   const nav=document.getElementById('mobile-nav');
   nav.classList.toggle('hidden');
 }
+function performHeaderSearch(){
+  const val=document.getElementById('header-search').value;
+  const si=document.getElementById('search-input');
+  if(si)si.value=val;
+  showPage('shop');
+  filterProducts();
+}
+function toggleCategoryMenu(){
+  document.getElementById('category-menu').classList.toggle('open');
+}
+document.addEventListener('click',(e)=>{
+  const panel=document.getElementById('category-menu');
+  const trigger=document.querySelector('.strip-all');
+  if(panel&&panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==trigger&&!trigger.contains(e.target)){
+    panel.classList.remove('open');
+  }
+});
+function scrollToFlashSale(){
+  showPage('home');
+  const el=document.getElementById('flash-sale');
+  if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth'}),50);
+}
+
+// ===== HERO BANNER CAROUSEL =====
+let heroSlideIndex=0,heroAutoplay=null;
+function showHeroSlide(i){
+  const slides=document.querySelectorAll('.hero-slide');
+  const dots=document.querySelectorAll('.hero-dot');
+  if(!slides.length)return;
+  heroSlideIndex=(i+slides.length)%slides.length;
+  slides.forEach((s,idx)=>s.classList.toggle('active',idx===heroSlideIndex));
+  dots.forEach((d,idx)=>d.classList.toggle('active',idx===heroSlideIndex));
+}
+function heroNext(){showHeroSlide(heroSlideIndex+1);}
+function heroPrev(){showHeroSlide(heroSlideIndex-1);}
+function startHeroAutoplay(){
+  if(heroAutoplay)clearInterval(heroAutoplay);
+  heroAutoplay=setInterval(heroNext,5000);
+}
+
+// ===== FLASH SALE =====
+function renderFlashSale(){
+  const el=document.getElementById('flash-products');
+  if(!el)return;
+  const deals=getProducts().filter(p=>p.oldPrice).sort((a,b)=>((1-b.price/b.oldPrice))-((1-a.price/a.oldPrice))).slice(0,8);
+  el.innerHTML=deals.length?deals.map(createProductCard).join(''):'<p style="color:rgba(255,255,255,0.5);padding:24px;">No deals right now &mdash; check back soon.</p>';
+}
+function startFlashCountdown(){
+  function update(){
+    const now=new Date();
+    const end=new Date(now);
+    end.setHours(24,0,0,0);
+    let diff=Math.max(0,end-now);
+    const h=Math.floor(diff/3600000);diff%=3600000;
+    const m=Math.floor(diff/60000);diff%=60000;
+    const s=Math.floor(diff/1000);
+    const pad=n=>String(n).padStart(2,'0');
+    const el=document.getElementById('flash-countdown');
+    if(el)el.textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+  }
+  update();
+  setInterval(update,1000);
+}
 function showToast(msg,type='info'){
   const c=document.getElementById('toast-container');
   const t=document.createElement('div');
@@ -2018,6 +2256,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateCartCount();
   loadFirestoreProducts();
   renderFeatured();
+  showHeroSlide(0);
+  startHeroAutoplay();
+  startFlashCountdown();
 });
 </script>
 <!-- Paystack (optional - add your public key when ready) -->
