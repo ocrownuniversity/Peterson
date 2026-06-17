@@ -222,6 +222,24 @@ ul{list-style:none;}
 .hero-arrow:hover{background:rgba(255,255,255,0.25);}
 .hero-arrow.prev{left:12px;}
 .hero-arrow.next{right:12px;}
+
+.banner-carousel{position:relative;width:100%;overflow:hidden;aspect-ratio:16/6;background:var(--gray-100);}
+.banner-carousel-track{display:flex;height:100%;transition:transform 0.5s ease;}
+.banner-carousel-slide{flex:0 0 100%;height:100%;position:relative;cursor:pointer;}
+.banner-carousel-slide img{width:100%;height:100%;object-fit:cover;display:block;}
+.banner-carousel-caption{position:absolute;bottom:0;left:0;right:0;padding:24px 32px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:white;}
+.banner-carousel-caption h3{font-family:var(--font-display);font-size:clamp(20px,3vw,32px);letter-spacing:1px;}
+.banner-carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.85);color:var(--black);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:5;transition:var(--transition);border:none;}
+.banner-carousel-arrow:hover{background:var(--white);}
+.banner-carousel-arrow.left{left:16px;}
+.banner-carousel-arrow.right{right:16px;}
+.banner-carousel-dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5;}
+.banner-carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:var(--transition);}
+.banner-carousel-dot.active{background:var(--white);width:22px;border-radius:4px;}
+@media(max-width:768px){
+  .banner-carousel{aspect-ratio:4/3;}
+  .banner-carousel-arrow{width:32px;height:32px;font-size:16px;}
+}
 .hero-side{display:flex;flex-direction:column;gap:16px;}
 .promo-tile{flex:1;border-radius:12px;padding:26px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;transition:var(--transition);min-height:212px;}
 .promo-tile:hover{transform:translateY(-2px);}
@@ -265,7 +283,7 @@ ul{list-style:none;}
 .product-card{background:var(--white);border:1px solid var(--gray-200);border-radius:14px;overflow:hidden;transition:var(--transition);position:relative;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
 .product-card:hover{transform:translateY(-5px);box-shadow:0 14px 28px rgba(0,0,0,0.12);border-color:var(--gray-300);}
 .product-card-imgwrap{position:relative;overflow:hidden;}
-.product-card-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--gray-100);display:block;transition:transform 0.5s ease;}
+.product-card-img{width:100%;aspect-ratio:1;object-fit:cover;object-position:top center;background:var(--gray-100);display:block;transition:transform 0.5s ease;}
 .product-card:hover .product-card-img{transform:scale(1.06);}
 .product-card-img-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(135deg,var(--gray-100),var(--gray-200));}
 .product-card-badge{position:absolute;top:10px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;letter-spacing:0.3px;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
@@ -380,14 +398,11 @@ footer{background:var(--black);padding:64px 0 0;}
 .product-detail{padding:48px 0;}
 .product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
 .product-images{position:sticky;top:174px;}
-.product-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:120px;overflow:hidden;}
+.product-main-img{width:100%;aspect-ratio:1;object-fit:cover;object-position:top center;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:120px;overflow:hidden;}
 .product-thumb-strip{display:flex;gap:10px;margin-top:12px;}
-.product-thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;cursor:pointer;border:2px solid transparent;opacity:0.7;transition:var(--transition);flex-shrink:0;}
+.product-thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;object-position:top center;cursor:pointer;border:2px solid transparent;opacity:0.7;transition:var(--transition);flex-shrink:0;}
 .product-thumb:hover{opacity:1;}
 .product-thumb.active{border-color:var(--market-orange);opacity:1;}
-.product-thumbs{display:flex;gap:12px;margin-top:12px;}
-.product-thumb{width:72px;height:72px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:var(--transition);}
-.product-thumb.active,.product-thumb:hover{border-color:var(--black);}
 .product-info .category{font-size:12px;color:var(--gray-400);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
 .product-info h1{font-family:var(--font-display);font-size:clamp(32px,4vw,48px);letter-spacing:1px;margin-bottom:16px;}
 .product-info .price{font-family:var(--font-display);font-size:36px;margin-bottom:8px;}
@@ -861,10 +876,11 @@ tr:hover td{background:var(--gray-100);}
   </section>
 
   <!-- DYNAMIC BANNERS (from Admin Panel) -->
-  <section class="section hidden" id="dynamic-banners-section" style="padding-top:0;">
-    <div class="container">
-      <div class="scroll-row" id="dynamic-banners-row"></div>
-    </div>
+  <section class="banner-carousel hidden" id="dynamic-banners-section">
+    <div class="banner-carousel-track" id="dynamic-banners-row"></div>
+    <button class="banner-carousel-arrow left" onclick="bannerCarouselPrev()">&lsaquo;</button>
+    <button class="banner-carousel-arrow right" onclick="bannerCarouselNext()">&rsaquo;</button>
+    <div class="banner-carousel-dots" id="banner-carousel-dots"></div>
   </section>
 
   <!-- FLASH SALE -->
@@ -1080,7 +1096,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-6)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-7)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1823,7 +1839,7 @@ function showProductDetail(id,opts={}){
   const thumbStrip=document.getElementById('product-thumb-strip');
   const images=(p.images&&p.images.length?p.images:(p.imageUrl?[p.imageUrl]:[]));
   if(images.length){
-    mainImgEl.innerHTML=`<img src="${images[0]}" alt="${p.name}" id="product-main-img-tag" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;
+    mainImgEl.innerHTML=`<img src="${images[0]}" alt="${p.name}" id="product-main-img-tag" style="width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:12px;">`;
   }else{
     mainImgEl.textContent=p.emoji;
   }
@@ -3324,21 +3340,44 @@ async function loadFirestoreProducts(){
   if(document.getElementById('page-shop').classList.contains('active'))filterProducts();
 }
 
+let bannerSlideIndex=0,bannerAutoplay=null,bannerSlideCount=0;
 async function loadHomeBanners(){
   try{
     const snap=await db.collection('banners').orderBy('createdAt','desc').get();
     const banners=snap.docs.map(d=>d.data());
     const section=document.getElementById('dynamic-banners-section');
     const row=document.getElementById('dynamic-banners-row');
+    const dotsWrap=document.getElementById('banner-carousel-dots');
     if(banners.length){
-      row.innerHTML=banners.map(b=>`<div style="min-width:280px;border-radius:12px;overflow:hidden;cursor:pointer;position:relative;" onclick="showPage('${b.link||'shop'}')">
-        <img src="${b.imageUrl}" style="width:100%;height:140px;object-fit:cover;display:block;" alt="${b.title||''}">
-        ${b.title?`<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:white;padding:12px;font-weight:700;">${b.title}</div>`:''}
+      row.innerHTML=banners.map(b=>`<div class="banner-carousel-slide" onclick="showPage('${b.link||'shop'}')">
+        <img src="${b.imageUrl}" alt="${b.title||''}">
+        ${b.title?`<div class="banner-carousel-caption"><h3>${b.title}</h3></div>`:''}
       </div>`).join('');
+      dotsWrap.innerHTML=banners.map((b,i)=>`<div class="banner-carousel-dot${i===0?' active':''}" onclick="event.stopPropagation();showBannerSlide(${i})"></div>`).join('');
+      bannerSlideCount=banners.length;
+      bannerSlideIndex=0;
       section.classList.remove('hidden');
+      const arrows=section.querySelectorAll('.banner-carousel-arrow');
+      arrows.forEach(a=>a.style.display=banners.length>1?'flex':'none');
+      dotsWrap.style.display=banners.length>1?'flex':'none';
+      if(banners.length>1)startBannerAutoplay();
     }
   }catch(e){console.error('loadHomeBanners failed:',e);}
 }
+function showBannerSlide(i){
+  if(!bannerSlideCount)return;
+  bannerSlideIndex=(i+bannerSlideCount)%bannerSlideCount;
+  const track=document.getElementById('dynamic-banners-row');
+  track.style.transform=`translateX(-${bannerSlideIndex*100}%)`;
+  document.querySelectorAll('.banner-carousel-dot').forEach((d,idx)=>d.classList.toggle('active',idx===bannerSlideIndex));
+}
+function bannerCarouselNext(){showBannerSlide(bannerSlideIndex+1);restartBannerAutoplay();}
+function bannerCarouselPrev(){showBannerSlide(bannerSlideIndex-1);restartBannerAutoplay();}
+function startBannerAutoplay(){
+  clearInterval(bannerAutoplay);
+  bannerAutoplay=setInterval(()=>showBannerSlide(bannerSlideIndex+1),5000);
+}
+function restartBannerAutoplay(){if(bannerSlideCount>1)startBannerAutoplay();}
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
