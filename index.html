@@ -258,10 +258,15 @@ ul{list-style:none;}
   .banner-carousel-arrow{width:32px;height:32px;font-size:16px;}
 }
 .hero-side{display:flex;flex-direction:column;gap:16px;}
-.promo-tile{flex:1;border-radius:12px;padding:26px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;transition:var(--transition);min-height:212px;}
+.promo-tile{flex:1;border-radius:12px;padding:26px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;transition:var(--transition);min-height:212px;position:relative;overflow:hidden;background-size:cover;background-position:center;}
 .promo-tile:hover{transform:translateY(-2px);}
-.promo-tile.jersey{background:linear-gradient(135deg,#3d0a0a,#1a0505);}
-.promo-tile.palm{background:linear-gradient(135deg,#0d3318,#0a1a0d);}
+.promo-tile.jersey{background-color:#1a0505;}
+.promo-tile.palm{background-color:#0a1a0d;}
+.promo-tile::before{content:'';position:absolute;inset:0;z-index:0;}
+.promo-tile.jersey::before{background:linear-gradient(135deg,rgba(61,10,10,0.88),rgba(26,5,5,0.7));}
+.promo-tile.palm::before{background:linear-gradient(135deg,rgba(13,51,24,0.88),rgba(10,26,13,0.7));}
+.promo-tile.has-image::before{background:linear-gradient(90deg,rgba(10,10,10,0.85) 0%,rgba(10,10,10,0.55) 55%,rgba(10,10,10,0.15) 100%);}
+.promo-tile>*{position:relative;z-index:1;}
 .promo-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:10px;}
 .promo-tile h4{font-family:var(--font-display);font-size:25px;color:var(--white);letter-spacing:1px;line-height:1.15;margin-bottom:14px;}
 .promo-link{color:var(--market-orange);font-size:13px;font-weight:700;}
@@ -884,12 +889,12 @@ tr:hover td{background:var(--gray-100);}
           <button class="hero-arrow next" onclick="heroNext()">❯</button>
         </div>
         <div class="hero-side">
-          <div class="promo-tile jersey" onclick="showPage('jerseys')">
+          <div class="promo-tile jersey" id="promo-tile-jersey" onclick="showPage('jerseys')">
             <span class="promo-eyebrow">Sportswear</span>
             <h4>New Club Kits<br>In Stock</h4>
             <span class="promo-link">Shop now &rarr;</span>
           </div>
-          <div class="promo-tile palm" onclick="showPage('palmoil')">
+          <div class="promo-tile palm" id="promo-tile-palm" onclick="showPage('palmoil')">
             <span class="promo-eyebrow">Natural &amp; Fresh</span>
             <h4>Palm Oil<br>Bulk Pricing</h4>
             <span class="promo-link">Shop now &rarr;</span>
@@ -1120,7 +1125,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-11)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-12)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -2840,8 +2845,57 @@ async function renderAdminBanners(el){
   <div class="admin-table-wrap" style="margin-top:24px;" id="banners-list-wrap">
     <div class="admin-table-header"><h4>Current Banners</h4></div>
     <div id="banners-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div>
+  </div>
+  <div class="admin-panel" style="margin-top:24px;">
+    <h3>HOMEPAGE PROMO TILE IMAGES</h3>
+    <p class="form-text" style="margin-bottom:16px;">These are the two small tiles next to the main hero slider ("New Club Kits" and "Palm Oil Bulk Pricing"). Add an image link for each to replace the plain background.</p>
+    <div class="form-group"><label class="form-label">Jersey Tile Image URL</label>
+      <input class="form-control" id="promo-jersey-url" placeholder="https://i.ibb.co/xxxxxxx/jersey-promo.jpg" oninput="previewPromoTileUrl('jersey')">
+      <img id="promo-jersey-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin-top:10px;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+    </div>
+    <div class="form-group"><label class="form-label">Palm Oil Tile Image URL</label>
+      <input class="form-control" id="promo-palm-url" placeholder="https://i.ibb.co/xxxxxxx/palmoil-promo.jpg" oninput="previewPromoTileUrl('palm')">
+      <img id="promo-palm-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin-top:10px;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+    </div>
+    <button class="btn btn-primary" id="promo-tiles-submit-btn" onclick="savePromoTileImages()">Save Promo Images</button>
   </div>`;
   loadBannersList();
+  loadPromoTileAdminForm();
+}
+function previewPromoTileUrl(which){
+  const url=document.getElementById('promo-'+which+'-url').value.trim();
+  const preview=document.getElementById('promo-'+which+'-preview');
+  if(url){preview.src=url;preview.style.display='block';}
+  else{preview.style.display='none';}
+}
+async function loadPromoTileAdminForm(){
+  try{
+    const snap=await db.collection('settings').doc('promoTiles').get();
+    if(!snap.exists)return;
+    const data=snap.data();
+    if(data.jerseyImage){
+      document.getElementById('promo-jersey-url').value=data.jerseyImage;
+      previewPromoTileUrl('jersey');
+    }
+    if(data.palmImage){
+      document.getElementById('promo-palm-url').value=data.palmImage;
+      previewPromoTileUrl('palm');
+    }
+  }catch(e){console.error('loadPromoTileAdminForm failed:',e);}
+}
+async function savePromoTileImages(){
+  const jerseyImage=document.getElementById('promo-jersey-url').value.trim();
+  const palmImage=document.getElementById('promo-palm-url').value.trim();
+  const btn=document.getElementById('promo-tiles-submit-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    await db.collection('settings').doc('promoTiles').set({jerseyImage,palmImage,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Promo tile images saved!','success');
+    loadPromoTileImages();
+  }catch(e){
+    showToast('Could not save: '+(e.message||'check Firestore rules'),'error');
+  }
+  btn.disabled=false;btn.textContent='Save Promo Images';
 }
 function previewBannerImageUrl(){
   const url=document.getElementById('banner-image-url').value.trim();
@@ -2886,6 +2940,10 @@ async function deleteBanner(docId){
 
 // ===== GALLERY VIDEOS =====
 // Extracts a YouTube video ID from common URL formats, or returns null if not YouTube
+function escapeHtmlAttr(str){
+  if(!str)return'';
+  return str.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 function getYouTubeId(url){
   if(!url)return null;
   const patterns=[
@@ -2897,12 +2955,13 @@ function getYouTubeId(url){
   for(const p of patterns){const m=url.match(p);if(m)return m[1];}
   return null;
 }
-function renderVideoEmbed(videoUrl,extraAttrs=''){
+function renderVideoEmbed(videoUrl,autoplay=false){
   const ytId=getYouTubeId(videoUrl);
   if(ytId){
-    return `<iframe src="https://www.youtube.com/embed/${ytId}" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen ${extraAttrs}></iframe>`;
+    const params=autoplay?'autoplay=1&playsinline=1':'playsinline=1';
+    return `<iframe src="https://www.youtube.com/embed/${ytId}?${params}" frameborder="0" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   }
-  return `<video src="${videoUrl}" controls ${extraAttrs}></video>`;
+  return `<video src="${videoUrl}" controls ${autoplay?'autoplay':''}></video>`;
 }
 function renderVideoThumb(videoUrl){
   const ytId=getYouTubeId(videoUrl);
@@ -2978,11 +3037,18 @@ async function loadGalleryPage(){
   try{
     const snap=await db.collection('galleryVideos').orderBy('createdAt','desc').get();
     const videos=snap.docs.map(d=>d.data());
-    grid.innerHTML=videos.length?videos.map(v=>`<div class="gallery-card" onclick="openGalleryLightbox('${v.videoUrl.replace(/'/g,"\\'")}')">
-      ${renderVideoThumb(v.videoUrl)}
-      <div class="gallery-card-play"><span>▶</span></div>
-      ${v.caption?`<div class="gallery-card-caption">${v.caption}</div>`:''}
-    </div>`).join(''):'<div class="gallery-empty">No gallery videos yet. Check back soon!</div>';
+    if(videos.length){
+      grid.innerHTML=videos.map(v=>`<div class="gallery-card" data-video-url="${escapeHtmlAttr(v.videoUrl)}">
+        ${renderVideoThumb(v.videoUrl)}
+        <div class="gallery-card-play"><span>▶</span></div>
+        ${v.caption?`<div class="gallery-card-caption">${v.caption}</div>`:''}
+      </div>`).join('');
+      grid.querySelectorAll('.gallery-card').forEach(card=>{
+        card.addEventListener('click',()=>openGalleryLightbox(card.dataset.videoUrl));
+      });
+    }else{
+      grid.innerHTML='<div class="gallery-empty">No gallery videos yet. Check back soon!</div>';
+    }
   }catch(e){grid.innerHTML='<div class="gallery-empty">Could not load gallery videos</div>';}
 }
 async function loadHomeGalleryTeaser(){
@@ -2992,11 +3058,14 @@ async function loadHomeGalleryTeaser(){
     const section=document.getElementById('home-gallery-teaser');
     const row=document.getElementById('home-gallery-row');
     if(videos.length){
-      row.innerHTML=videos.map(v=>`<div class="gallery-card" onclick="openGalleryLightbox('${v.videoUrl.replace(/'/g,"\\'")}')">
+      row.innerHTML=videos.map((v,i)=>`<div class="gallery-card" data-video-url="${escapeHtmlAttr(v.videoUrl)}">
         ${renderVideoThumb(v.videoUrl)}
         <div class="gallery-card-play"><span>▶</span></div>
         ${v.caption?`<div class="gallery-card-caption">${v.caption}</div>`:''}
       </div>`).join('');
+      row.querySelectorAll('.gallery-card').forEach(card=>{
+        card.addEventListener('click',()=>openGalleryLightbox(card.dataset.videoUrl));
+      });
       section.classList.remove('hidden');
     }
   }catch(e){console.error('loadHomeGalleryTeaser failed:',e);}
@@ -3004,7 +3073,7 @@ async function loadHomeGalleryTeaser(){
 function openGalleryLightbox(videoUrl){
   const box=document.createElement('div');
   box.className='gallery-lightbox';
-  box.innerHTML=`<button class="gallery-lightbox-close" onclick="this.parentElement.remove()">&times;</button>${renderVideoEmbed(videoUrl,'autoplay')}`;
+  box.innerHTML=`<button class="gallery-lightbox-close" onclick="this.parentElement.remove()">&times;</button>${renderVideoEmbed(videoUrl,true)}`;
   box.onclick=(e)=>{if(e.target===box)box.remove();};
   document.body.appendChild(box);
 }
@@ -3374,6 +3443,23 @@ async function loadFirestoreProducts(){
 }
 
 let bannerSlideIndex=0,bannerAutoplay=null,bannerSlideCount=0;
+async function loadPromoTileImages(){
+  try{
+    const snap=await db.collection('settings').doc('promoTiles').get();
+    if(!snap.exists)return;
+    const data=snap.data();
+    if(data.jerseyImage){
+      const el=document.getElementById('promo-tile-jersey');
+      el.style.backgroundImage=`url('${data.jerseyImage}')`;
+      el.classList.add('has-image');
+    }
+    if(data.palmImage){
+      const el=document.getElementById('promo-tile-palm');
+      el.style.backgroundImage=`url('${data.palmImage}')`;
+      el.classList.add('has-image');
+    }
+  }catch(e){console.error('loadPromoTileImages failed:',e);}
+}
 async function loadHomeBanners(){
   try{
     const snap=await db.collection('banners').orderBy('createdAt','desc').get();
@@ -3421,6 +3507,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   startFlashCountdown();
   loadHomeBanners();
   loadHomeGalleryTeaser();
+  loadPromoTileImages();
   history.replaceState({page:'home',productId:null},'','#home');
 });
 
