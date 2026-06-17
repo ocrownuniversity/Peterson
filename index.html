@@ -300,8 +300,8 @@ ul{list-style:none;}
 .product-card{background:var(--white);border:1px solid var(--gray-200);border-radius:14px;overflow:hidden;transition:var(--transition);position:relative;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
 .product-card:hover{transform:translateY(-5px);box-shadow:0 14px 28px rgba(0,0,0,0.12);border-color:var(--gray-300);}
 .product-card-imgwrap{position:relative;overflow:hidden;}
-.product-card-img{width:100%;aspect-ratio:1;object-fit:cover;object-position:top center;background:var(--gray-100);display:block;transition:transform 0.5s ease;}
-.product-card:hover .product-card-img{transform:scale(1.06);}
+.product-card-img{width:100%;aspect-ratio:1;object-fit:cover;object-position:center 30%;background:var(--gray-100);display:block;transition:transform 0.5s ease;transform:scale(1.25);}
+.product-card:hover .product-card-img{transform:scale(1.32);}
 .product-card-img-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(135deg,var(--gray-100),var(--gray-200));}
 .product-card-badge{position:absolute;top:10px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;letter-spacing:0.3px;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 .product-card-badge.badge-discount{left:10px;background:var(--jersey-red);color:white;}
@@ -1120,7 +1120,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-10)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-11)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1863,7 +1863,7 @@ function showProductDetail(id,opts={}){
   const thumbStrip=document.getElementById('product-thumb-strip');
   const images=(p.images&&p.images.length?p.images:(p.imageUrl?[p.imageUrl]:[]));
   if(images.length){
-    mainImgEl.innerHTML=`<img src="${images[0]}" alt="${p.name}" id="product-main-img-tag" style="width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:12px;">`;
+    mainImgEl.innerHTML=`<img src="${images[0]}" alt="${p.name}" id="product-main-img-tag" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;transform:scale(1.25);border-radius:12px;">`;
   }else{
     mainImgEl.textContent=p.emoji;
   }
