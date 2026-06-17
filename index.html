@@ -457,6 +457,11 @@ footer{background:var(--black);padding:64px 0 0;}
 .order-line.total{font-weight:700;font-size:16px;padding-top:12px;border-top:2px solid var(--black);margin-top:4px;}
 .bank-details{background:var(--gray-100);border-radius:var(--radius);padding:20px;margin-top:16px;}
 .bank-detail-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;}
+.delivery-fee-box{margin-top:14px;padding:14px 16px;background:#e8f5ea;border:1px solid var(--palm-green);border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center;font-size:14px;}
+.delivery-fee-box .fee-label{color:var(--gray-600);}
+.delivery-fee-box .fee-amount{font-weight:700;color:var(--palm-green);font-size:16px;}
+.delivery-fee-box.pending{background:#fff3e0;border-color:var(--palm-gold);}
+.delivery-fee-box.pending .fee-amount{color:#a07000;}
 .bank-detail-row strong{font-weight:700;}
 
 /* ===== ACCOUNT ===== */
@@ -1075,7 +1080,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-4)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-5)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1187,12 +1192,46 @@ tr:hover td{background:var(--gray-100);}
           </div>
           <div class="form-group"><label class="form-label">Email Address *</label><input class="form-control" id="checkout-email" placeholder="john@example.com" type="email"></div>
           <div class="form-group"><label class="form-label">Phone Number *</label><input class="form-control" id="checkout-phone" placeholder="08012345678"></div>
-          <div class="form-group"><label class="form-label">Delivery Address *</label><textarea class="form-control" id="checkout-address" rows="3" placeholder="Full street address..."></textarea></div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">City *</label><input class="form-control" id="checkout-city" placeholder="Lagos"></div>
-            <div class="form-group"><label class="form-label">State *</label><input class="form-control" id="checkout-state" placeholder="Lagos State"></div>
-          </div>
           <div class="form-group"><label class="form-label">Order Notes (optional)</label><textarea class="form-control" id="checkout-notes" rows="2" placeholder="Special instructions..."></textarea></div>
+        </div>
+
+        <div class="checkout-section">
+          <h3>DELIVERY METHOD</h3>
+          <div class="payment-methods" style="grid-template-columns:repeat(2,1fr);">
+            <div class="payment-method selected" id="delivery-home" onclick="selectDeliveryMethod('home')">
+              <div class="method-icon">🚚</div>
+              <h5>Home Delivery</h5>
+              <p>Delivered to your address</p>
+            </div>
+            <div class="payment-method" id="delivery-pickup" onclick="selectDeliveryMethod('pickup')">
+              <div class="method-icon">📍</div>
+              <h5>Pickup Station</h5>
+              <p>Collect from a station near you</p>
+            </div>
+          </div>
+
+          <div id="delivery-state-wrap" style="margin-top:20px;">
+            <div class="form-group"><label class="form-label">State *</label>
+              <select class="form-control" id="checkout-state-select" onchange="onDeliveryStateChange()">
+                <option value="">Select your state...</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="delivery-home-fields" style="display:none;">
+            <div class="form-group"><label class="form-label">City / Town *</label><input class="form-control" id="checkout-city" placeholder="e.g. Ikeja"></div>
+            <div class="form-group"><label class="form-label">Delivery Address *</label><textarea class="form-control" id="checkout-address" rows="3" placeholder="Full street address..."></textarea></div>
+            <div id="delivery-fee-display" class="delivery-fee-box hidden"></div>
+          </div>
+
+          <div id="delivery-pickup-fields" style="display:none;">
+            <div class="form-group"><label class="form-label">Pickup Station *</label>
+              <select class="form-control" id="checkout-pickup-station" onchange="onPickupStationChange()">
+                <option value="">Select a state first...</option>
+              </select>
+            </div>
+            <div id="pickup-fee-display" class="delivery-fee-box hidden"></div>
+          </div>
         </div>
 
         <div class="checkout-section">
@@ -1474,6 +1513,7 @@ tr:hover td{background:var(--gray-100);}
           <div class="admin-nav-label">Settings</div>
           <a href="#" onclick="adminTab('payment-settings')" id="admin-tab-payment-settings">💳 Payment Settings</a>
           <a href="#" onclick="adminTab('paystack-settings')" id="admin-tab-paystack-settings">💳 Paystack Settings</a>
+          <a href="#" onclick="adminTab('delivery-settings')" id="admin-tab-delivery-settings">🚚 Delivery &amp; Pickup</a>
         </div>
         <div class="admin-nav-section" style="margin-top:20px;">
           <a href="#" onclick="showPage('home')" style="color:rgba(255,255,255,0.4);">&larr; Back to Store</a>
@@ -1525,6 +1565,40 @@ let selectedSize = null;
 let selectedPayment = 'cod';
 let couponDiscount = 0;
 let appliedCoupon = '';
+let deliveryMethod = 'home'; // 'home' or 'pickup'
+let selectedDeliveryState = '';
+let selectedPickupStation = '';
+let deliveryFee = 0;
+let deliveryZonesConfig = null; // loaded from Firestore settings/delivery
+let pickupStationsCache = {}; // {stateName: [stations]}
+
+// Default delivery fee tiers — editable later from the admin panel (stored in Firestore settings/delivery)
+const DEFAULT_DELIVERY_TIERS = {
+  ibadan: {label:'Ibadan & Nearby (Oyo)', fee:1000, states:['Oyo']},
+  southwest: {label:'South West', fee:2000, states:['Lagos','Ogun','Osun','Ondo','Ekiti']},
+  other: {label:'Other States', fee:4500, states:[
+    'Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno',
+    'Cross River','Delta','Ebonyi','Edo','Enugu','FCT (Abuja)','Gombe','Imo',
+    'Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Nasarawa','Niger',
+    'Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'
+  ]}
+};
+function getDefaultDeliveryZones(){
+  const zones={};
+  Object.entries(DEFAULT_DELIVERY_TIERS).forEach(([tierKey,tier])=>{
+    tier.states.forEach(state=>{zones[state]={tier:tierKey,fee:tier.fee};});
+  });
+  return zones;
+}
+const DEFAULT_PICKUP_STATIONS = {
+  'Oyo':['UI Gate','Bodija','Dugbe','Apata'],
+  'Lagos':['Ikeja','Yaba','Lekki','Ajah','Surulere'],
+  'Ogun':['Abeokuta Central','Sango','Ijebu Ode']
+};
+const NIGERIAN_STATES = ['Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno',
+  'Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','FCT (Abuja)','Gombe','Imo','Jigawa','Kaduna',
+  'Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa','Niger','Ogun','Ondo','Osun','Oyo',
+  'Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'];
 
 // ===== SAMPLE PRODUCTS =====
 const sampleProducts = [
@@ -1831,6 +1905,13 @@ function renderCheckout(){
     </div>
     <strong>₦${(i.price*i.qty).toLocaleString()}</strong>
   </div>`).join('');
+  // Reset delivery state on every fresh checkout visit
+  deliveryMethod='home';selectedDeliveryState='';selectedPickupStation='';deliveryFee=0;
+  document.getElementById('delivery-home').classList.add('selected');
+  document.getElementById('delivery-pickup').classList.remove('selected');
+  document.getElementById('delivery-home-fields').style.display='block';
+  document.getElementById('delivery-pickup-fields').style.display='none';
+  populateStateDropdown();
   renderCheckoutTotals();
   loadBankDetails();
   loadPaystackSettingsForCheckout();
@@ -1843,14 +1924,99 @@ async function loadPaystackSettingsForCheckout(){
     if(cardOption)cardOption.classList.toggle('hidden',!(paystackSettings.enabled&&paystackSettings.publicKey));
   }catch(e){}
 }
+
+// ===== DYNAMIC DELIVERY SYSTEM =====
+async function getDeliveryZones(){
+  if(deliveryZonesConfig)return deliveryZonesConfig;
+  try{
+    const snap=await db.collection('settings').doc('delivery').get();
+    if(snap.exists&&snap.data().zones){deliveryZonesConfig=snap.data().zones;}
+    else{deliveryZonesConfig=getDefaultDeliveryZones();}
+  }catch(e){
+    console.error('getDeliveryZones failed, using defaults:',e);
+    deliveryZonesConfig=getDefaultDeliveryZones();
+  }
+  return deliveryZonesConfig;
+}
+async function populateStateDropdown(){
+  const select=document.getElementById('checkout-state-select');
+  const zones=await getDeliveryZones();
+  const states=Object.keys(zones).length?Object.keys(zones):NIGERIAN_STATES;
+  select.innerHTML='<option value="">Select your state...</option>'+
+    states.sort().map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+function selectDeliveryMethod(method){
+  deliveryMethod=method;
+  selectedDeliveryState='';selectedPickupStation='';deliveryFee=0;
+  document.getElementById('delivery-home').classList.toggle('selected',method==='home');
+  document.getElementById('delivery-pickup').classList.toggle('selected',method==='pickup');
+  document.getElementById('delivery-home-fields').style.display=method==='home'?'block':'none';
+  document.getElementById('delivery-pickup-fields').style.display=method==='pickup'?'block':'none';
+  document.getElementById('checkout-state-select').value='';
+  document.getElementById('checkout-pickup-station').innerHTML='<option value="">Select a state first...</option>';
+  document.getElementById('delivery-fee-display').classList.add('hidden');
+  document.getElementById('pickup-fee-display').classList.add('hidden');
+  renderCheckoutTotals();
+}
+async function onDeliveryStateChange(){
+  const state=document.getElementById('checkout-state-select').value;
+  selectedDeliveryState=state;
+  selectedPickupStation='';
+  if(!state){deliveryFee=0;renderCheckoutTotals();return;}
+  if(deliveryMethod==='home'){
+    const zones=await getDeliveryZones();
+    const zoneInfo=zones[state];
+    deliveryFee=zoneInfo?zoneInfo.fee:4500;
+    const feeBox=document.getElementById('delivery-fee-display');
+    feeBox.classList.remove('hidden','pending');
+    feeBox.innerHTML=`<span class="fee-label">Delivery fee to ${state}</span><span class="fee-amount">₦${deliveryFee.toLocaleString()}</span>`;
+  }else{
+    await loadPickupStationsForState(state);
+  }
+  renderCheckoutTotals();
+}
+async function loadPickupStationsForState(state){
+  const select=document.getElementById('checkout-pickup-station');
+  select.innerHTML='<option value="">Loading stations...</option>';
+  let stations=pickupStationsCache[state];
+  if(!stations){
+    try{
+      const snap=await db.collection('pickupStations').doc(state).get();
+      stations=(snap.exists&&snap.data().stations)?snap.data().stations:(DEFAULT_PICKUP_STATIONS[state]||[]);
+    }catch(e){
+      console.error('loadPickupStationsForState failed:',e);
+      stations=DEFAULT_PICKUP_STATIONS[state]||[];
+    }
+    pickupStationsCache[state]=stations;
+  }
+  if(!stations.length){
+    select.innerHTML='<option value="">No pickup stations available in this state yet</option>';
+    return;
+  }
+  select.innerHTML='<option value="">Select a pickup station...</option>'+stations.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+async function onPickupStationChange(){
+  selectedPickupStation=document.getElementById('checkout-pickup-station').value;
+  if(!selectedPickupStation){deliveryFee=0;document.getElementById('pickup-fee-display').classList.add('hidden');renderCheckoutTotals();return;}
+  const zones=await getDeliveryZones();
+  const zoneInfo=zones[selectedDeliveryState];
+  // Pickup stations charge a reduced flat handling fee rather than full home-delivery rate
+  deliveryFee=zoneInfo?Math.round(zoneInfo.fee*0.5):1500;
+  const feeBox=document.getElementById('pickup-fee-display');
+  feeBox.classList.remove('hidden');
+  feeBox.innerHTML=`<span class="fee-label">Pickup at ${selectedPickupStation}</span><span class="fee-amount">₦${deliveryFee.toLocaleString()}</span>`;
+  renderCheckoutTotals();
+}
 function renderCheckoutTotals(){
   const sub=getCartTotal();
   const disc=couponDiscount;
-  const total=Math.max(0,sub-disc);
+  const deliveryReady=(deliveryMethod==='home'&&selectedDeliveryState)||(deliveryMethod==='pickup'&&selectedPickupStation);
+  const fee=deliveryReady?deliveryFee:0;
+  const total=Math.max(0,sub-disc+fee);
   document.getElementById('checkout-totals').innerHTML=`
     <div class="order-line"><span>Subtotal</span><span>₦${sub.toLocaleString()}</span></div>
     ${disc?`<div class="order-line" style="color:var(--palm-green);"><span>Discount (${appliedCoupon})</span><span>-₦${disc.toLocaleString()}</span></div>`:''}
-    <div class="order-line"><span>Delivery</span><span>Calculated</span></div>
+    <div class="order-line"><span>${deliveryMethod==='pickup'?'Pickup Handling Fee':'Delivery Fee'}</span><span>${deliveryReady?'₦'+fee.toLocaleString():'Select '+(deliveryMethod==='pickup'?'a pickup station':'your state')}</span></div>
     <div class="order-line total"><span>Total</span><span>₦${total.toLocaleString()}</span></div>`;
 }
 function selectPayment(method){
@@ -1913,20 +2079,36 @@ async function placeOrder(){
   const lname=document.getElementById('checkout-lname').value.trim();
   const email=document.getElementById('checkout-email').value.trim();
   const phone=document.getElementById('checkout-phone').value.trim();
-  const address=document.getElementById('checkout-address').value.trim();
-  const city=document.getElementById('checkout-city').value.trim();
-  const state=document.getElementById('checkout-state').value.trim();
-  if(!fname||!lname||!email||!phone||!address||!city||!state){showToast('Please fill all required fields','error');return;}
+  if(!fname||!lname||!email||!phone){showToast('Please fill all required fields','error');return;}
   if(!cart.length){showToast('Your cart is empty','error');return;}
+
+  let address='',city='',state='',pickupStation='';
+  if(deliveryMethod==='home'){
+    address=document.getElementById('checkout-address').value.trim();
+    city=document.getElementById('checkout-city').value.trim();
+    state=selectedDeliveryState;
+    if(!state){showToast('Please select your state for delivery','error');return;}
+    if(!city||!address){showToast('Please fill your city and delivery address','error');return;}
+  }else{
+    state=selectedDeliveryState;
+    pickupStation=selectedPickupStation;
+    if(!state){showToast('Please select your state','error');return;}
+    if(!pickupStation){showToast('Please select a pickup station','error');return;}
+    address=pickupStation+' Pickup Station';
+    city=pickupStation;
+  }
+
+  const deliveryInfo={method:deliveryMethod,state,fee:deliveryFee,pickupStation:pickupStation||null};
+
   if(selectedPayment==='card'){
-    initiatePaystack(fname+' '+lname,email,phone,address,city,state);
+    initiatePaystack(fname+' '+lname,email,phone,address,city,state,deliveryInfo);
     return;
   }
   const methodLabel=selectedPayment==='bank'?'bank_transfer':'cash_on_delivery';
-  await createOrder({name:fname+' '+lname,email,phone,address,city,state},cart,methodLabel,'pending');
+  await createOrder({name:fname+' '+lname,email,phone,address,city,state},cart,methodLabel,'pending',deliveryInfo);
 }
-function initiatePaystack(name,email,phone,address,city,state){
-  const total=Math.round((getCartTotal()-couponDiscount)*100);
+function initiatePaystack(name,email,phone,address,city,state,deliveryInfo){
+  const total=Math.round((getCartTotal()-couponDiscount+(deliveryInfo?.fee||0))*100);
   if(typeof PaystackPop==='undefined'||!paystackSettings.publicKey){
     showToast('Card payment is not set up yet. Please choose another payment method.','error');
     return;
@@ -1936,24 +2118,26 @@ function initiatePaystack(name,email,phone,address,city,state){
     email,amount:total,currency:'NGN',
     metadata:{name,phone,address,city,state},
     callback:function(response){
-      createOrder({name,email,phone,address,city,state},cart,'paystack','processing',response.reference);
+      createOrder({name,email,phone,address,city,state},cart,'paystack','processing',deliveryInfo,response.reference);
     },
     onClose:function(){showToast('Payment window closed','info');}
   });
   handler.openIframe();
 }
-async function createOrder(customer,items,paymentMethod,status,paymentRef=''){
+async function createOrder(customer,items,paymentMethod,status,deliveryInfo={},paymentRef=''){
   try{
     const orderId='ORD-'+Date.now();
+    const fee=deliveryInfo?.fee||0;
     const order={
-      orderId,customer,items,paymentMethod,paymentRef,status,
-      subtotal:getCartTotal(),discount:couponDiscount,coupon:appliedCoupon,
-      total:getCartTotal()-couponDiscount,
+      orderId,customer,items,paymentMethod,paymentRef,status,delivery:deliveryInfo,
+      subtotal:getCartTotal(),discount:couponDiscount,coupon:appliedCoupon,deliveryFee:fee,
+      total:getCartTotal()-couponDiscount+fee,
       userId:currentUser?.uid||'guest',
       createdAt:firebase.firestore.FieldValue.serverTimestamp()
     };
     await db.collection('orders').add(order);
     cart=[];saveCart();updateCartCount();couponDiscount=0;appliedCoupon='';
+    deliveryMethod='home';selectedDeliveryState='';selectedPickupStation='';deliveryFee=0;
     showToast('🎉 Order placed successfully! Order ID: '+orderId,'success');
     if(currentUser)showPage('account');
     else showPage('home');
@@ -2192,7 +2376,7 @@ function adminTab(tab){
   document.querySelectorAll('.admin-nav a').forEach(a=>{a.classList.remove('active');});
   const el=document.getElementById('admin-tab-'+tab);
   if(el)el.classList.add('active');
-  const titles={overview:'Dashboard',analytics:'Analytics',products:'All Products','add-product':'Add Product','bulk-import':'Bulk Import',banners:'Banners',gallery:'Gallery Videos',orders:'All Orders',coupons:'Coupons',reviews:'Reviews',customers:'Users',chats:'Chats','manage-admins':'Manage Admins','reset-requests':'Reset Requests','payment-settings':'Payment Settings','paystack-settings':'Paystack Settings'};
+  const titles={overview:'Dashboard',analytics:'Analytics',products:'All Products','add-product':'Add Product','bulk-import':'Bulk Import',banners:'Banners',gallery:'Gallery Videos',orders:'All Orders',coupons:'Coupons',reviews:'Reviews',customers:'Users',chats:'Chats','manage-admins':'Manage Admins','reset-requests':'Reset Requests','payment-settings':'Payment Settings','paystack-settings':'Paystack Settings','delivery-settings':'Delivery & Pickup'};
   document.getElementById('admin-topbar-title').textContent=titles[tab]||tab;
   const content=document.getElementById('admin-content');
   if(tab==='overview')renderAdminOverview(content);
@@ -2209,6 +2393,7 @@ function adminTab(tab){
   else if(tab==='reset-requests')renderAdminResetRequests(content);
   else if(tab==='payment-settings')renderAdminPaymentSettings(content);
   else if(tab==='paystack-settings')renderAdminPaystackSettings(content);
+  else if(tab==='delivery-settings')renderAdminDeliverySettings(content);
   else if(tab==='coupons')renderAdminCoupons(content);
   else if(tab==='reviews')renderAdminReviews(content);
   closeAdminSidebar();
@@ -2376,10 +2561,11 @@ async function renderAdminOrders(el){
   try{
     const snap=await db.collection('orders').orderBy('createdAt','desc').get();
     const orders=snap.docs.map(d=>({...d.data(),docId:d.id}));
-    document.getElementById('all-orders-list').innerHTML=orders.length?`<table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody>${orders.map(o=>`<tr>
+    document.getElementById('all-orders-list').innerHTML=orders.length?`<table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Delivery</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody>${orders.map(o=>`<tr>
       <td><strong>${o.orderId}</strong></td>
       <td>${o.customer?.name||'-'}<br><span style="font-size:11px;color:var(--gray-400);">${o.customer?.phone||''}</span></td>
       <td>${o.items?.length||0} items</td>
+      <td>${o.delivery?.method==='pickup'?`📍 ${o.delivery.pickupStation||'Pickup'}`:`🚚 ${o.delivery?.state||o.customer?.state||'-'}`}<br><span style="font-size:11px;color:var(--gray-400);">Fee: ₦${(o.deliveryFee||0).toLocaleString()}</span></td>
       <td>₦${(o.total||0).toLocaleString()}</td>
       <td>${o.paymentMethod}</td>
       <td><span class="order-status status-${o.status}">${o.status}</span></td>
@@ -2936,6 +3122,108 @@ async function savePaystackSettings(){
     await db.collection('settings').doc('paystack').set({enabled,publicKey,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
     showToast('Paystack settings saved!','success');
   }catch(e){showToast('Could not save settings: '+(e.message||''),'error');}
+}
+
+// ===== DELIVERY & PICKUP SETTINGS =====
+async function renderAdminDeliverySettings(el){
+  el.innerHTML=`<div class="admin-panel">
+    <h3>DELIVERY FEE BY STATE</h3>
+    <p class="form-text" style="margin-bottom:16px;">Set the home delivery fee for each Nigerian state. Pickup station handling fees are automatically calculated as half the state's delivery fee.</p>
+    <div id="delivery-fee-editor"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="saveDeliveryFees()">Save All Fees</button>
+  </div>
+  <div class="admin-panel">
+    <h3>PICKUP STATIONS</h3>
+    <p class="form-text" style="margin-bottom:16px;">Add, edit, or remove pickup stations for any state. Customers choosing "Pickup Station" at checkout will see these options.</p>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">State</label>
+        <select class="form-control" id="ps-state-select"></select>
+      </div>
+      <div class="form-group"><label class="form-label">New Station Name</label>
+        <div style="display:flex;gap:10px;">
+          <input class="form-control" id="ps-station-name" placeholder="e.g. Ikeja">
+          <button class="btn btn-primary" onclick="addPickupStation()" style="flex-shrink:0;">Add</button>
+        </div>
+      </div>
+    </div>
+    <div id="pickup-stations-editor"></div>
+  </div>`;
+  loadDeliveryFeeEditor();
+  loadPickupStationStateSelect();
+}
+async function loadDeliveryFeeEditor(){
+  const zones=await getDeliveryZones();
+  const editor=document.getElementById('delivery-fee-editor');
+  editor.innerHTML=`<div class="admin-table-wrap" style="box-shadow:none;border:1px solid var(--gray-200);">
+    <table><thead><tr><th>State</th><th>Delivery Fee (₦)</th></tr></thead><tbody>
+      ${NIGERIAN_STATES.map(state=>`<tr>
+        <td>${state}</td>
+        <td><input class="form-control" type="number" style="max-width:160px;" id="fee-${state.replace(/[^a-zA-Z0-9]/g,'')}" value="${zones[state]?.fee||4500}"></td>
+      </tr>`).join('')}
+    </tbody></table>
+  </div>`;
+}
+async function saveDeliveryFees(){
+  const zones={};
+  NIGERIAN_STATES.forEach(state=>{
+    const input=document.getElementById('fee-'+state.replace(/[^a-zA-Z0-9]/g,''));
+    const fee=parseFloat(input.value)||0;
+    zones[state]={fee};
+  });
+  try{
+    await db.collection('settings').doc('delivery').set({zones,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    deliveryZonesConfig=zones;
+    showToast('Delivery fees saved!','success');
+  }catch(e){showToast('Could not save delivery fees: '+(e.message||''),'error');}
+}
+function loadPickupStationStateSelect(){
+  const select=document.getElementById('ps-state-select');
+  select.innerHTML=NIGERIAN_STATES.map(s=>`<option value="${s}">${s}</option>`).join('');
+  select.onchange=()=>loadPickupStationsEditor(select.value);
+  loadPickupStationsEditor(select.value);
+}
+async function loadPickupStationsEditor(state){
+  const wrap=document.getElementById('pickup-stations-editor');
+  wrap.innerHTML='<div style="padding:20px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div>';
+  try{
+    const snap=await db.collection('pickupStations').doc(state).get();
+    const stations=(snap.exists&&snap.data().stations)?snap.data().stations:(DEFAULT_PICKUP_STATIONS[state]||[]);
+    wrap.innerHTML=stations.length?stations.map((s,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-100);">
+      <span>📍 ${s}</span>
+      <button class="btn btn-sm btn-red" onclick="removePickupStation('${state}',${i})">Remove</button>
+    </div>`).join(''):'<p style="color:var(--gray-400);padding:12px 0;">No pickup stations yet for this state.</p>';
+  }catch(e){wrap.innerHTML='<p style="color:var(--gray-400);padding:12px 0;">Could not load stations.</p>';}
+}
+async function addPickupStation(){
+  const state=document.getElementById('ps-state-select').value;
+  const nameInput=document.getElementById('ps-station-name');
+  const name=nameInput.value.trim();
+  if(!name){showToast('Enter a station name','error');return;}
+  try{
+    const ref=db.collection('pickupStations').doc(state);
+    const snap=await ref.get();
+    const stations=(snap.exists&&snap.data().stations)?snap.data().stations:(DEFAULT_PICKUP_STATIONS[state]||[]);
+    if(stations.includes(name)){showToast('That station already exists','error');return;}
+    stations.push(name);
+    await ref.set({state,stations});
+    delete pickupStationsCache[state];
+    nameInput.value='';
+    showToast('Pickup station added!','success');
+    loadPickupStationsEditor(state);
+  }catch(e){showToast('Could not add station: '+(e.message||''),'error');}
+}
+async function removePickupStation(state,index){
+  if(!confirm('Remove this pickup station?'))return;
+  try{
+    const ref=db.collection('pickupStations').doc(state);
+    const snap=await ref.get();
+    const stations=(snap.exists&&snap.data().stations)?snap.data().stations:(DEFAULT_PICKUP_STATIONS[state]||[]);
+    stations.splice(index,1);
+    await ref.set({state,stations});
+    delete pickupStationsCache[state];
+    showToast('Pickup station removed','info');
+    loadPickupStationsEditor(state);
+  }catch(e){showToast('Could not remove station: '+(e.message||''),'error');}
 }
 
 // ===== MISC =====
