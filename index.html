@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peterson &mdash; The Serial Entrepreneur</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#f57224">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Peterson">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -117,6 +124,16 @@ ul{list-style:none;}
 
 /* ===== NAVBAR ===== */
 #navbar{position:fixed;top:0;width:100%;z-index:500;transition:var(--transition);}
+.pwa-install-bar{display:flex;align-items:center;justify-content:center;gap:16px;background:var(--market-orange);color:white;padding:9px 16px;font-size:13px;font-weight:600;flex-wrap:wrap;text-align:center;}
+.pwa-install-bar.hidden{display:none;}
+.pwa-install-text{flex:1;min-width:0;}
+.pwa-install-btn{background:var(--black);color:white;border:none;padding:7px 16px;border-radius:20px;font-size:12.5px;font-weight:700;cursor:pointer;transition:var(--transition);white-space:nowrap;}
+.pwa-install-btn:hover{background:#000;opacity:0.85;}
+.pwa-install-dismiss{background:none;border:none;color:white;font-size:20px;line-height:1;cursor:pointer;padding:0 4px;opacity:0.8;}
+.pwa-install-dismiss:hover{opacity:1;}
+@media(max-width:480px){
+  .pwa-install-bar{font-size:12px;padding:8px 12px;}
+}
 .nav-top{background:var(--market-navy);padding:7px 0;}
 .nav-top-inner{display:flex;justify-content:space-between;align-items:center;}
 .nav-top-info{display:flex;gap:20px;font-size:12px;color:rgba(255,255,255,0.6);}
@@ -680,6 +697,13 @@ tr:hover td{background:var(--gray-100);}
 
 <!-- NAVBAR -->
 <nav id="navbar">
+  <div class="pwa-install-bar hidden" id="pwa-install-bar">
+    <span class="pwa-install-text">📲 Install the Peterson app for faster access</span>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+      <button class="pwa-install-btn" onclick="triggerPwaInstall()">Install App</button>
+      <button class="pwa-install-dismiss" onclick="dismissPwaInstallBar()" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
   <div class="nav-top">
     <div class="container nav-top-inner">
       <div class="nav-top-info">
@@ -1096,7 +1120,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-9)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-10)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -3399,6 +3423,59 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadHomeGalleryTeaser();
   history.replaceState({page:'home',productId:null},'','#home');
 });
+
+// ===== PWA: INSTALL PROMPT =====
+let deferredInstallPrompt=null;
+function isIos(){return /iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;}
+function isInStandaloneMode(){return ('standalone' in window.navigator && window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;}
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  if(!isInStandaloneMode()&&sessionStorage.getItem('pwa_install_dismissed')!=='1'){
+    const bar=document.getElementById('pwa-install-bar');
+    if(bar)bar.classList.remove('hidden');
+  }
+});
+async function triggerPwaInstall(){
+  if(!deferredInstallPrompt){
+    if(isIos()){
+      showToast('On iPhone/iPad: tap the Share icon, then "Add to Home Screen".','info');
+    }else{
+      showToast('App install isn\'t available on this browser right now.','info');
+    }
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  const choice=await deferredInstallPrompt.userChoice;
+  if(choice.outcome==='accepted'){showToast('Installing Peterson app...','success');}
+  deferredInstallPrompt=null;
+  dismissPwaInstallBar();
+}
+function dismissPwaInstallBar(){
+  const bar=document.getElementById('pwa-install-bar');
+  if(bar)bar.classList.add('hidden');
+  sessionStorage.setItem('pwa_install_dismissed','1');
+}
+window.addEventListener('appinstalled',()=>{
+  dismissPwaInstallBar();
+  deferredInstallPrompt=null;
+});
+// iOS doesn't fire beforeinstallprompt — show the bar manually there (unless already installed/dismissed)
+if(isIos()&&!isInStandaloneMode()&&sessionStorage.getItem('pwa_install_dismissed')!=='1'){
+  document.addEventListener('DOMContentLoaded',()=>{
+    const bar=document.getElementById('pwa-install-bar');
+    if(bar)bar.classList.remove('hidden');
+  });
+}
+
+// ===== PWA: SERVICE WORKER REGISTRATION =====
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(err=>{
+      console.error('Service worker registration failed:',err);
+    });
+  });
+}
 </script>
 <!-- Paystack (optional - add your public key when ready) -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
