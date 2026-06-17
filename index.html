@@ -271,6 +271,7 @@ ul{list-style:none;}
 .product-card-badge{position:absolute;top:10px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;letter-spacing:0.3px;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 .product-card-badge.badge-discount{left:10px;background:var(--jersey-red);color:white;}
 .product-card-badge.badge-featured{right:10px;background:linear-gradient(135deg,#f0b429,#d4940a);color:white;}
+.product-card-photocount{position:absolute;bottom:10px;right:10px;font-size:11px;font-weight:600;padding:4px 9px;border-radius:20px;background:rgba(0,0,0,0.6);color:white;}
 .product-card-soldout{position:absolute;inset:0;background:rgba(20,20,20,0.55);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;}
 .product-card.out-of-stock{cursor:default;}
 .product-card-body{padding:14px;}
@@ -379,7 +380,11 @@ footer{background:var(--black);padding:64px 0 0;}
 .product-detail{padding:48px 0;}
 .product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
 .product-images{position:sticky;top:174px;}
-.product-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:120px;}
+.product-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:120px;overflow:hidden;}
+.product-thumb-strip{display:flex;gap:10px;margin-top:12px;}
+.product-thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;cursor:pointer;border:2px solid transparent;opacity:0.7;transition:var(--transition);flex-shrink:0;}
+.product-thumb:hover{opacity:1;}
+.product-thumb.active{border-color:var(--market-orange);opacity:1;}
 .product-thumbs{display:flex;gap:12px;margin-top:12px;}
 .product-thumb{width:72px;height:72px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:var(--transition);}
 .product-thumb.active,.product-thumb:hover{border-color:var(--black);}
@@ -1070,7 +1075,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-3)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-4)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1160,6 +1165,7 @@ tr:hover td{background:var(--gray-100);}
       <div class="product-detail-grid">
         <div class="product-images">
           <div class="product-main-img" id="product-main-img"></div>
+          <div class="product-thumb-strip hidden" id="product-thumb-strip"></div>
         </div>
         <div class="product-info" id="product-info"></div>
       </div>
@@ -1607,11 +1613,14 @@ function toggleCart(){
 function createProductCard(p){
   const disc=p.oldPrice?Math.round((1-p.price/p.oldPrice)*100):0;
   const outOfStock=p.stock<=0;
+  const cardImg=(p.images&&p.images[0])||p.imageUrl;
+  const photoCount=(p.images&&p.images.length)||(p.imageUrl?1:0);
   return `<div class="product-card${outOfStock?' out-of-stock':''}" onclick="showProductDetail('${p.id}')">
     <div class="product-card-imgwrap">
-      ${p.imageUrl?`<img class="product-card-img" src="${p.imageUrl}" alt="${p.name}" loading="lazy">`:`<div class="product-card-img-placeholder">${p.emoji}</div>`}
+      ${cardImg?`<img class="product-card-img" src="${cardImg}" alt="${p.name}" loading="lazy">`:`<div class="product-card-img-placeholder">${p.emoji}</div>`}
       ${disc?`<span class="product-card-badge badge-discount">-${disc}%</span>`:''}
       ${p.featured?`<span class="product-card-badge badge-featured">⭐ Best Seller</span>`:''}
+      ${photoCount>1?`<span class="product-card-photocount">📷 ${photoCount}</span>`:''}
       ${outOfStock?`<div class="product-card-soldout">Out of Stock</div>`:''}
     </div>
     <div class="product-card-body">
@@ -1721,6 +1730,12 @@ function filterProducts(){
 }
 
 // ===== PRODUCT DETAIL =====
+function switchProductImage(url,thumbEl){
+  const mainTag=document.getElementById('product-main-img-tag');
+  if(mainTag)mainTag.src=url;
+  document.querySelectorAll('.product-thumb').forEach(t=>t.classList.remove('active'));
+  thumbEl.classList.add('active');
+}
 function showProductDetail(id,opts={}){
   const p=getProducts().find(x=>x.id===id)||(sampleProducts.find(x=>x.id===id));
   if(!p)return;
@@ -1731,8 +1746,20 @@ function showProductDetail(id,opts={}){
     <a href="#" onclick="showPage(${p.cat==='jersey'?"'jerseys'":"'palmoil'"})"> ${p.cat==='jersey'?'Jerseys':'Palm Oil'}</a> &rsaquo;
     <span>${p.name}</span>`;
   const mainImgEl=document.getElementById('product-main-img');
-  if(p.imageUrl){mainImgEl.innerHTML=`<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;}
-  else{mainImgEl.textContent=p.emoji;}
+  const thumbStrip=document.getElementById('product-thumb-strip');
+  const images=(p.images&&p.images.length?p.images:(p.imageUrl?[p.imageUrl]:[]));
+  if(images.length){
+    mainImgEl.innerHTML=`<img src="${images[0]}" alt="${p.name}" id="product-main-img-tag" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;
+  }else{
+    mainImgEl.textContent=p.emoji;
+  }
+  if(images.length>1){
+    thumbStrip.innerHTML=images.map((img,i)=>`<img class="product-thumb${i===0?' active':''}" src="${img}" alt="${p.name} photo ${i+1}" onclick="switchProductImage('${img.replace(/'/g,"\\'")}',this)">`).join('');
+    thumbStrip.classList.remove('hidden');
+  }else{
+    thumbStrip.innerHTML='';
+    thumbStrip.classList.add('hidden');
+  }
   document.getElementById('product-info').innerHTML=`
     <div class="category">${p.subcat}</div>
     <h1>${p.name}</h1>
@@ -2247,13 +2274,19 @@ async function renderAdminProducts(el){
 let editingProductId=null;
 function renderAdminAddProduct(el,product=null){
   editingProductId=product?product.id:null;
+  const existingImages=product?.images&&product.images.length?product.images:(product?.imageUrl?[product.imageUrl]:[]);
   el.innerHTML=`<div class="admin-panel">
     <h3>${product?'EDIT PRODUCT':'ADD NEW PRODUCT'}</h3>
     <div class="form-group">
-      <label class="form-label">Product Image URL (ImgBB link or any direct image URL)</label>
-      <input class="form-control" id="ap-image-url" placeholder="https://i.ibb.co/xxxxxxx/photo.jpg" value="${product?.imageUrl||''}" oninput="previewProductImageUrl()">
-      <p class="form-text">Upload your photo to <a href="https://imgbb.com" target="_blank" rel="noopener">imgbb.com</a>, copy the "Direct link", and paste it here.</p>
-      <img id="ap-img-preview" src="${product?.imageUrl||''}" style="max-width:140px;max-height:140px;border-radius:8px;margin-top:10px;${product?.imageUrl?'':'display:none;'}" onerror="this.style.display='none'" onload="this.style.display='block'">
+      <label class="form-label">Product Images (up to 4 links)</label>
+      <p class="form-text">Upload your photos to <a href="https://imgbb.com" target="_blank" rel="noopener">imgbb.com</a>, copy each "Direct link", and paste below. The first image is the main photo.</p>
+      <div id="ap-image-fields">
+        ${[0,1,2,3].map(i=>`
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;">
+          <img id="ap-img-preview-${i}" src="${existingImages[i]||''}" style="width:54px;height:54px;border-radius:8px;object-fit:cover;background:var(--gray-100);flex-shrink:0;${existingImages[i]?'':'display:none;'}" onerror="this.style.display='none'" onload="this.style.display='block'">
+          <input class="form-control" id="ap-image-url-${i}" placeholder="${i===0?'Main image link (required)':'Image '+(i+1)+' link (optional)'}" value="${existingImages[i]||''}" oninput="previewProductImageUrl(${i})">
+        </div>`).join('')}
+      </div>
     </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Product Name *</label><input class="form-control" id="ap-name" placeholder="e.g. Manchester City Jersey" value="${product?.name||''}"></div>
@@ -2285,10 +2318,10 @@ function editProductForm(id){
   document.getElementById('admin-topbar-title').textContent='Edit Product';
   renderAdminAddProduct(document.getElementById('admin-content'),p);
 }
-function previewProductImageUrl(){
-  const url=document.getElementById('ap-image-url').value.trim();
-  const preview=document.getElementById('ap-img-preview');
-  if(url){preview.src=url;}
+function previewProductImageUrl(i){
+  const url=document.getElementById('ap-image-url-'+i).value.trim();
+  const preview=document.getElementById('ap-img-preview-'+i);
+  if(url){preview.src=url;preview.style.display='block';}
   else{preview.style.display='none';}
 }
 async function addProduct(){
@@ -2302,14 +2335,15 @@ async function addProduct(){
   const stock=parseInt(document.getElementById('ap-stock').value);
   const hasSizes=document.getElementById('ap-hassizes').value==='yes';
   const featured=document.getElementById('ap-featured').value==='yes';
-  const imageUrl=document.getElementById('ap-image-url').value.trim()||null;
+  const images=[0,1,2,3].map(i=>document.getElementById('ap-image-url-'+i).value.trim()).filter(Boolean);
+  const imageUrl=images[0]||null;
   if(!name||!desc||!isFinite(price)||!isFinite(stock)){showToast('Please fill required fields','error');return;}
   const submitBtn=document.getElementById('ap-submit-btn');
   const isEdit=!!editingProductId;
   const id=isEdit?editingProductId:'db-'+Date.now();
   submitBtn.disabled=true;submitBtn.textContent='Saving...';
   try{
-    const product={id,name,cat,subcat,emoji,desc,price,oldPrice,stock,sizes:hasSizes?['S','M','L','XL','XXL']:null,featured,imageUrl,
+    const product={id,name,cat,subcat,emoji,desc,price,oldPrice,stock,sizes:hasSizes?['S','M','L','XL','XXL']:null,featured,imageUrl,images,
       rating:isEdit?(getProducts().find(p=>p.id===id)?.rating||5):5,
       reviews:isEdit?(getProducts().find(p=>p.id===id)?.reviews||0):0,
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
