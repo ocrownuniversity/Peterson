@@ -262,15 +262,29 @@ ul{list-style:none;}
 .cat-card.palm .btn{background:var(--palm-green);}
 
 /* ===== PRODUCT CARD ===== */
-.product-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-sm);overflow:hidden;transition:var(--transition);position:relative;cursor:pointer;}
-.product-card:hover{border-color:var(--gray-400);box-shadow:var(--shadow);}
-.product-card-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--gray-100);}
+.product-card{background:var(--white);border:1px solid var(--gray-200);border-radius:14px;overflow:hidden;transition:var(--transition);position:relative;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.product-card:hover{transform:translateY(-5px);box-shadow:0 14px 28px rgba(0,0,0,0.12);border-color:var(--gray-300);}
+.product-card-imgwrap{position:relative;overflow:hidden;}
+.product-card-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--gray-100);display:block;transition:transform 0.5s ease;}
+.product-card:hover .product-card-img{transform:scale(1.06);}
 .product-card-img-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(135deg,var(--gray-100),var(--gray-200));}
-.product-card-body{padding:12px;}
-.product-card-cat{font-size:11px;color:var(--gray-400);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.product-card-name{font-weight:500;font-size:13px;margin-bottom:8px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px;}
-.product-card-desc{display:none;}
+.product-card-badge{position:absolute;top:10px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;letter-spacing:0.3px;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.product-card-badge.badge-discount{left:10px;background:var(--jersey-red);color:white;}
+.product-card-badge.badge-featured{right:10px;background:linear-gradient(135deg,#f0b429,#d4940a);color:white;}
+.product-card-soldout{position:absolute;inset:0;background:rgba(20,20,20,0.55);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;}
+.product-card.out-of-stock{cursor:default;}
+.product-card-body{padding:14px;}
+.product-card-cat{font-size:10.5px;color:var(--gray-400);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;font-weight:600;}
+.product-card-name{font-weight:600;font-size:14px;margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px;color:var(--gray-900);}
+.product-card-rating{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+.product-card-rating .stars{font-size:12px;color:var(--palm-gold);letter-spacing:1px;}
+.product-card-reviews{font-size:11px;color:var(--gray-400);}
 .product-card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.product-card .product-price{font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:0;color:var(--gray-900);display:flex;flex-direction:column;line-height:1.3;}
+.product-card .product-price .old{font-family:var(--font-body);font-size:11.5px;color:var(--gray-400);text-decoration:line-through;font-weight:400;}
+.product-card-addbtn{width:38px;height:38px;border-radius:10px;border:none;background:var(--market-orange);color:white;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition);flex-shrink:0;}
+.product-card-addbtn:hover{background:var(--market-orange-dark);transform:scale(1.06);}
+.product-card-addbtn:disabled{background:var(--gray-300);cursor:not-allowed;}
 .product-price{font-family:var(--font-body);font-weight:700;font-size:16px;letter-spacing:0;color:var(--market-orange-dark);}
 .product-price .old{display:block;font-size:12px;color:var(--gray-400);text-decoration:line-through;font-weight:400;}
 .product-badge{position:absolute;top:0;left:0;}
@@ -1025,7 +1039,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-16-4)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-16-5)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1544,28 +1558,32 @@ function toggleCart(){
 // ===== PRODUCT CARDS =====
 function createProductCard(p){
   const disc=p.oldPrice?Math.round((1-p.price/p.oldPrice)*100):0;
-  return `<div class="product-card" onclick="showProductDetail('${p.id}')">
-    ${p.imageUrl?`<img class="product-card-img" src="${p.imageUrl}" alt="${p.name}">`:`<div class="product-card-img-placeholder">${p.emoji}</div>`}
-    ${disc?`<div class="product-badge"><span class="badge badge-red">-${disc}%</span></div>`:''}
-    ${p.featured?`<div style="position:absolute;top:12px;right:12px;"><span class="badge badge-gold">⭐ Best</span></div>`:''}
+  const outOfStock=p.stock<=0;
+  return `<div class="product-card${outOfStock?' out-of-stock':''}" onclick="showProductDetail('${p.id}')">
+    <div class="product-card-imgwrap">
+      ${p.imageUrl?`<img class="product-card-img" src="${p.imageUrl}" alt="${p.name}" loading="lazy">`:`<div class="product-card-img-placeholder">${p.emoji}</div>`}
+      ${disc?`<span class="product-card-badge badge-discount">-${disc}%</span>`:''}
+      ${p.featured?`<span class="product-card-badge badge-featured">⭐ Best Seller</span>`:''}
+      ${outOfStock?`<div class="product-card-soldout">Out of Stock</div>`:''}
+    </div>
     <div class="product-card-body">
       <div class="product-card-cat">${p.subcat}</div>
       <div class="product-card-name">${p.name}</div>
-      <div class="product-card-desc">${p.desc}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-        <div class="stars">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</div>
-        <span style="font-size:12px;color:var(--gray-400);">(${p.reviews})</span>
+      <div class="product-card-rating">
+        <span class="stars">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</span>
+        <span class="product-card-reviews">(${p.reviews})</span>
       </div>
       <div class="product-card-footer">
-        <div class="product-price">₦${p.price.toLocaleString()}${p.oldPrice?`<span class="old"> ₦${p.oldPrice.toLocaleString()}</span>`:''}</div>
-        <div class="cart-qty-btn wishlist-btn" onclick="event.stopPropagation();addToCart('${p.id}')" title="Add to cart">🛒</div>
+        <div class="product-price">₦${p.price.toLocaleString()}${p.oldPrice?`<span class="old">₦${p.oldPrice.toLocaleString()}</span>`:''}</div>
+        <button class="product-card-addbtn" onclick="event.stopPropagation();addToCart('${p.id}')" title="Add to cart" ${outOfStock?'disabled':''}>🛒</button>
       </div>
     </div>
   </div>`;
 }
 
 // ===== PAGES =====
-function showPage(page){
+let isHandlingPopState=false;
+function showPage(page,opts={}){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.category-strip-inner a').forEach(a=>{a.classList.remove('active');});
   const el=document.getElementById('page-'+page);
@@ -1578,6 +1596,12 @@ function showPage(page){
   const navbar=document.getElementById('navbar');
   if(navbar)navbar.classList.toggle('hidden',page==='admin');
   document.body.classList.toggle('admin-mode',page==='admin');
+  // Push a real history entry so the browser back button works, unless we're already responding to one
+  if(!isHandlingPopState && !opts.skipHistory){
+    const state={page,productId:opts.productId||null};
+    const url='#'+page+(opts.productId?'/'+opts.productId:'');
+    if(window.location.hash!==url){history.pushState(state,'',url);}
+  }
   // Page-specific init
   if(page==='shop')renderShop();
   if(page==='jerseys')renderJerseys();
@@ -1588,6 +1612,20 @@ function showPage(page){
   if(page==='admin'){if(isAdmin)adminTab('overview');else{showToast('Admin access required','error');showPage('home');}}
   if(page==='auth')renderAuth('login');
 }
+window.addEventListener('popstate',(e)=>{
+  isHandlingPopState=true;
+  const state=e.state;
+  if(state&&state.page){
+    if(state.page==='product'&&state.productId){
+      showProductDetail(state.productId,{skipHistory:true});
+    }else{
+      showPage(state.page,{skipHistory:true});
+    }
+  }else{
+    showPage('home',{skipHistory:true});
+  }
+  isHandlingPopState=false;
+});
 
 // ===== RENDER PRODUCTS =====
 function getProducts(){return allProducts.length?allProducts:sampleProducts;}
@@ -1629,11 +1667,11 @@ function filterProducts(){
 }
 
 // ===== PRODUCT DETAIL =====
-function showProductDetail(id){
+function showProductDetail(id,opts={}){
   const p=getProducts().find(x=>x.id===id)||(sampleProducts.find(x=>x.id===id));
   if(!p)return;
   currentProduct=p;selectedSize=null;
-  showPage('product');
+  showPage('product',{skipHistory:opts.skipHistory,productId:id});
   document.getElementById('product-breadcrumb').innerHTML=`
     <a href="#" onclick="showPage('home')">Home</a> &rsaquo;
     <a href="#" onclick="showPage(${p.cat==='jersey'?"'jerseys'":"'palmoil'"})"> ${p.cat==='jersey'?'Jerseys':'Palm Oil'}</a> &rsaquo;
@@ -2846,6 +2884,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   startHeroAutoplay();
   startFlashCountdown();
   loadHomeBanners();
+  history.replaceState({page:'home',productId:null},'','#home');
 });
 </script>
 <!-- Paystack (optional - add your public key when ready) -->
