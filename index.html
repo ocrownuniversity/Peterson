@@ -1080,7 +1080,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-5)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-6)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -2786,12 +2786,10 @@ async function confirmBulkImport(){
 async function renderAdminBanners(el){
   el.innerHTML=`<div class="admin-panel">
     <h3>ADD HOME BANNER</h3>
-    <div class="form-group"><label class="form-label">Banner Image</label>
-      <div class="img-upload-area" onclick="document.getElementById('banner-img-file').click()">
-        <img id="banner-img-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin:0 auto 12px;display:none;">
-        <div class="upload-icon">🖼️</div><p>Click to upload a banner image (recommended 1200x500)</p>
-      </div>
-      <input type="file" id="banner-img-file" accept="image/*" class="hidden" onchange="handleBannerImageSelect(event)">
+    <div class="form-group"><label class="form-label">Banner Image URL (ImgBB link or any direct image URL)</label>
+      <input class="form-control" id="banner-image-url" placeholder="https://i.ibb.co/xxxxxxx/banner.jpg" oninput="previewBannerImageUrl()">
+      <p class="form-text">Upload your banner to <a href="https://imgbb.com" target="_blank" rel="noopener">imgbb.com</a> (recommended 1200x500), copy the "Direct link", and paste it here.</p>
+      <img id="banner-img-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin-top:10px;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
     </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Title</label><input class="form-control" id="banner-title" placeholder="e.g. Jersey Season Sale"></div>
@@ -2805,34 +2803,26 @@ async function renderAdminBanners(el){
   </div>`;
   loadBannersList();
 }
-let pendingBannerFile=null;
-function handleBannerImageSelect(e){
-  const file=e.target.files[0];
-  if(!file)return;
-  if(file.size>5*1024*1024){showToast('Image must be under 5MB','error');return;}
-  pendingBannerFile=file;
+function previewBannerImageUrl(){
+  const url=document.getElementById('banner-image-url').value.trim();
   const preview=document.getElementById('banner-img-preview');
-  const reader=new FileReader();
-  reader.onload=ev=>{preview.src=ev.target.result;preview.style.display='block';};
-  reader.readAsDataURL(file);
+  if(url){preview.src=url;preview.style.display='block';}
+  else{preview.style.display='none';}
 }
 async function addBanner(){
   const title=document.getElementById('banner-title').value.trim();
   const link=document.getElementById('banner-link').value;
-  if(!pendingBannerFile){showToast('Please choose a banner image','error');return;}
+  const imageUrl=document.getElementById('banner-image-url').value.trim();
+  if(!imageUrl){showToast('Please paste a banner image link','error');return;}
   const btn=document.getElementById('banner-submit-btn');
-  btn.disabled=true;btn.textContent='Uploading...';
+  btn.disabled=true;btn.textContent='Saving...';
   try{
     const id='banner-'+Date.now();
-    const ref=storage.ref().child(`banners/${id}.jpg`);
-    await ref.put(pendingBannerFile);
-    const imageUrl=await ref.getDownloadURL();
     await db.collection('banners').doc(id).set({id,title,link,imageUrl,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
     showToast('Banner added!','success');
-    pendingBannerFile=null;
     adminTab('banners');
   }catch(e){
-    showToast('Could not upload banner: '+(e.message||'check Storage rules'),'error');
+    showToast('Could not save banner: '+(e.message||'check Firestore rules'),'error');
     btn.disabled=false;btn.textContent='Add Banner';
   }
 }
