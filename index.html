@@ -1070,7 +1070,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-1)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-2)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -2240,20 +2240,15 @@ async function renderAdminProducts(el){
   </div>`;
 }
 let editingProductId=null;
-let pendingProductImageFile=null;
 function renderAdminAddProduct(el,product=null){
   editingProductId=product?product.id:null;
-  pendingProductImageFile=null;
   el.innerHTML=`<div class="admin-panel">
     <h3>${product?'EDIT PRODUCT':'ADD NEW PRODUCT'}</h3>
     <div class="form-group">
-      <label class="form-label">Product Image</label>
-      <div class="img-upload-area" id="ap-img-drop" onclick="document.getElementById('ap-image-file').click()">
-        <img id="ap-img-preview" src="${product?.imageUrl||''}" style="max-width:140px;max-height:140px;border-radius:8px;margin:0 auto 12px;${product?.imageUrl?'':'display:none;'}">
-        <div class="upload-icon">📷</div>
-        <p>Click to upload a product photo (JPG/PNG, max 5MB)</p>
-      </div>
-      <input type="file" id="ap-image-file" accept="image/*" class="hidden" onchange="handleProductImageSelect(event)">
+      <label class="form-label">Product Image URL (ImgBB link or any direct image URL)</label>
+      <input class="form-control" id="ap-image-url" placeholder="https://i.ibb.co/xxxxxxx/photo.jpg" value="${product?.imageUrl||''}" oninput="previewProductImageUrl()">
+      <p class="form-text">Upload your photo to <a href="https://imgbb.com" target="_blank" rel="noopener">imgbb.com</a>, copy the "Direct link", and paste it here.</p>
+      <img id="ap-img-preview" src="${product?.imageUrl||''}" style="max-width:140px;max-height:140px;border-radius:8px;margin-top:10px;${product?.imageUrl?'':'display:none;'}" onerror="this.style.display='none'" onload="this.style.display='block'">
     </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Product Name *</label><input class="form-control" id="ap-name" placeholder="e.g. Manchester City Jersey" value="${product?.name||''}"></div>
@@ -2285,22 +2280,11 @@ function editProductForm(id){
   document.getElementById('admin-topbar-title').textContent='Edit Product';
   renderAdminAddProduct(document.getElementById('admin-content'),p);
 }
-function handleProductImageSelect(e){
-  const file=e.target.files[0];
-  if(!file)return;
-  if(file.size>5*1024*1024){showToast('Image must be under 5MB','error');e.target.value='';return;}
-  pendingProductImageFile=file;
+function previewProductImageUrl(){
+  const url=document.getElementById('ap-image-url').value.trim();
   const preview=document.getElementById('ap-img-preview');
-  const reader=new FileReader();
-  reader.onload=ev=>{preview.src=ev.target.result;preview.style.display='block';};
-  reader.readAsDataURL(file);
-}
-async function uploadProductImage(productId,file){
-  const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
-  const path=`product-images/${productId}.${ext}`;
-  const ref=storage.ref().child(path);
-  await ref.put(file);
-  return await ref.getDownloadURL();
+  if(url){preview.src=url;}
+  else{preview.style.display='none';}
 }
 async function addProduct(){
   const name=document.getElementById('ap-name').value.trim();
@@ -2313,16 +2297,13 @@ async function addProduct(){
   const stock=parseInt(document.getElementById('ap-stock').value);
   const hasSizes=document.getElementById('ap-hassizes').value==='yes';
   const featured=document.getElementById('ap-featured').value==='yes';
+  const imageUrl=document.getElementById('ap-image-url').value.trim()||null;
   if(!name||!desc||!isFinite(price)||!isFinite(stock)){showToast('Please fill required fields','error');return;}
   const submitBtn=document.getElementById('ap-submit-btn');
   const isEdit=!!editingProductId;
   const id=isEdit?editingProductId:'db-'+Date.now();
   submitBtn.disabled=true;submitBtn.textContent='Saving...';
   try{
-    let imageUrl=isEdit?(getProducts().find(p=>p.id===id)?.imageUrl||null):null;
-    if(pendingProductImageFile){
-      imageUrl=await uploadProductImage(id,pendingProductImageFile);
-    }
     const product={id,name,cat,subcat,emoji,desc,price,oldPrice,stock,sizes:hasSizes?['S','M','L','XL','XXL']:null,featured,imageUrl,
       rating:isEdit?(getProducts().find(p=>p.id===id)?.rating||5):5,
       reviews:isEdit?(getProducts().find(p=>p.id===id)?.reviews||0):0,
@@ -2336,7 +2317,7 @@ async function addProduct(){
     adminTab('products');
   }catch(e){
     console.error('addProduct failed:',e);
-    showToast('Could not save product: '+(e.message||'check Firestore/Storage rules'),'error');
+    showToast('Could not save product: '+(e.message||'check Firestore rules'),'error');
     submitBtn.disabled=false;submitBtn.textContent=isEdit?'Save Changes':'Add Product';
   }
 }
