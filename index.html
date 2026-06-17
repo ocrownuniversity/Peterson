@@ -561,7 +561,7 @@ tr:hover td{background:var(--gray-100);}
 .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
 .gallery-card{position:relative;border-radius:14px;overflow:hidden;background:var(--black);aspect-ratio:9/16;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:var(--transition);}
 .gallery-card:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(0,0,0,0.18);}
-.gallery-card video{width:100%;height:100%;object-fit:cover;display:block;}
+.gallery-card video,.gallery-card img,.gallery-card iframe{width:100%;height:100%;object-fit:cover;display:block;border:none;}
 .gallery-card-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.15);transition:var(--transition);}
 .gallery-card:hover .gallery-card-play{background:rgba(0,0,0,0.3);}
 .gallery-card-play span{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--black);}
@@ -569,7 +569,7 @@ tr:hover td{background:var(--gray-100);}
 .gallery-empty{grid-column:1/-1;text-align:center;padding:60px 0;color:var(--gray-400);}
 .gallery-teaser .scroll-row .gallery-card{flex:0 0 200px;aspect-ratio:9/16;}
 .gallery-lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
-.gallery-lightbox video{max-width:90vw;max-height:85vh;border-radius:10px;}
+.gallery-lightbox video,.gallery-lightbox iframe{max-width:90vw;max-height:85vh;border-radius:10px;width:90vw;height:50.6vw;max-height:85vh;border:none;}
 .gallery-lightbox-close{position:absolute;top:20px;right:24px;color:white;font-size:32px;background:none;cursor:pointer;line-height:1;}
 
 /* ===== WHATSAPP FLOAT ===== */
@@ -1096,7 +1096,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-8)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-9)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -2861,19 +2861,42 @@ async function deleteBanner(docId){
 }
 
 // ===== GALLERY VIDEOS =====
+// Extracts a YouTube video ID from common URL formats, or returns null if not YouTube
+function getYouTubeId(url){
+  if(!url)return null;
+  const patterns=[
+    /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/
+  ];
+  for(const p of patterns){const m=url.match(p);if(m)return m[1];}
+  return null;
+}
+function renderVideoEmbed(videoUrl,extraAttrs=''){
+  const ytId=getYouTubeId(videoUrl);
+  if(ytId){
+    return `<iframe src="https://www.youtube.com/embed/${ytId}" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen ${extraAttrs}></iframe>`;
+  }
+  return `<video src="${videoUrl}" controls ${extraAttrs}></video>`;
+}
+function renderVideoThumb(videoUrl){
+  const ytId=getYouTubeId(videoUrl);
+  if(ytId){
+    return `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="Video thumbnail">`;
+  }
+  return `<video src="${videoUrl}" muted preload="metadata"></video>`;
+}
 async function renderAdminGallery(el){
   el.innerHTML=`<div class="admin-panel">
-    <h3>UPLOAD GALLERY VIDEO</h3>
-    <div class="form-group"><label class="form-label">Video File</label>
-      <div class="img-upload-area" id="gallery-upload-area" onclick="document.getElementById('gallery-video-file').click()">
-        <video id="gallery-video-preview" style="max-width:200px;max-height:160px;border-radius:8px;margin:0 auto 12px;display:none;" muted></video>
-        <div class="upload-icon">📹</div><p>Click to upload a video (MP4/MOV, max 50MB)</p>
-      </div>
-      <input type="file" id="gallery-video-file" accept="video/*" class="hidden" onchange="handleGalleryVideoSelect(event)">
-      <div id="gallery-upload-progress" class="hidden" style="margin-top:10px;height:6px;background:var(--gray-200);border-radius:4px;overflow:hidden;"><div id="gallery-upload-bar" style="height:100%;width:0%;background:var(--market-orange);transition:width 0.2s;"></div></div>
+    <h3>ADD GALLERY VIDEO</h3>
+    <div class="form-group"><label class="form-label">Video Link (YouTube or direct video URL)</label>
+      <input class="form-control" id="gallery-video-url" placeholder="https://youtube.com/watch?v=xxxxxxx" oninput="previewGalleryVideoUrl()">
+      <p class="form-text">Paste a YouTube link, YouTube Shorts link, or a direct video file link (e.g. from a video hosting site).</p>
+      <div id="gallery-video-preview-wrap" style="margin-top:12px;max-width:280px;display:none;"></div>
     </div>
     <div class="form-group"><label class="form-label">Caption</label><input class="form-control" id="gallery-caption" placeholder="e.g. Unboxing our new club jersey"></div>
-    <button class="btn btn-primary" id="gallery-submit-btn" onclick="addGalleryVideo()">Upload Video</button>
+    <button class="btn btn-primary" id="gallery-submit-btn" onclick="addGalleryVideo()">Add Video</button>
   </div>
   <div class="admin-table-wrap" style="margin-top:24px;" id="gallery-list-wrap">
     <div class="admin-table-header"><h4>Gallery Videos</h4></div>
@@ -2881,46 +2904,32 @@ async function renderAdminGallery(el){
   </div>`;
   loadGalleryAdminList();
 }
-let pendingGalleryVideoFile=null;
-function handleGalleryVideoSelect(e){
-  const file=e.target.files[0];
-  if(!file)return;
-  if(file.size>50*1024*1024){showToast('Video must be under 50MB','error');e.target.value='';return;}
-  if(!file.type.startsWith('video/')){showToast('Please choose a video file','error');e.target.value='';return;}
-  pendingGalleryVideoFile=file;
-  const preview=document.getElementById('gallery-video-preview');
-  preview.src=URL.createObjectURL(file);
-  preview.style.display='block';
+function previewGalleryVideoUrl(){
+  const url=document.getElementById('gallery-video-url').value.trim();
+  const wrap=document.getElementById('gallery-video-preview-wrap');
+  if(!url){wrap.style.display='none';wrap.innerHTML='';return;}
+  const ytId=getYouTubeId(url);
+  if(ytId){
+    wrap.innerHTML=`<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" style="width:100%;border-radius:8px;" onerror="this.parentElement.innerHTML='<p style=&quot;color:var(--gray-400);font-size:13px;&quot;>Could not load preview \u2014 check the link</p>'">`;
+  }else{
+    wrap.innerHTML=`<video src="${url}" controls style="width:100%;border-radius:8px;max-height:200px;" onerror="this.parentElement.innerHTML='<p style=&quot;color:var(--gray-400);font-size:13px;&quot;>Could not load preview \u2014 check the link</p>'"></video>`;
+  }
+  wrap.style.display='block';
 }
 async function addGalleryVideo(){
   const caption=document.getElementById('gallery-caption').value.trim();
-  if(!pendingGalleryVideoFile){showToast('Please choose a video file first','error');return;}
+  const videoUrl=document.getElementById('gallery-video-url').value.trim();
+  if(!videoUrl){showToast('Please paste a video link','error');return;}
   const btn=document.getElementById('gallery-submit-btn');
-  const progressWrap=document.getElementById('gallery-upload-progress');
-  const progressBar=document.getElementById('gallery-upload-bar');
-  btn.disabled=true;btn.textContent='Uploading...';
-  progressWrap.classList.remove('hidden');
+  btn.disabled=true;btn.textContent='Saving...';
   try{
     const id='gallery-'+Date.now();
-    const ext=(pendingGalleryVideoFile.name.split('.').pop()||'mp4').toLowerCase();
-    const ref=storage.ref().child(`gallery-videos/${id}.${ext}`);
-    const uploadTask=ref.put(pendingGalleryVideoFile);
-    await new Promise((resolve,reject)=>{
-      uploadTask.on('state_changed',
-        snap=>{const pct=Math.round((snap.bytesTransferred/snap.totalBytes)*100);progressBar.style.width=pct+'%';},
-        err=>reject(err),
-        ()=>resolve()
-      );
-    });
-    const videoUrl=await ref.getDownloadURL();
     await db.collection('galleryVideos').doc(id).set({id,caption,videoUrl,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-    showToast('Video uploaded!','success');
-    pendingGalleryVideoFile=null;
+    showToast('Video added!','success');
     adminTab('gallery');
   }catch(e){
-    showToast('Could not upload video: '+(e.message||'check Storage rules'),'error');
-    btn.disabled=false;btn.textContent='Upload Video';
-    progressWrap.classList.add('hidden');
+    showToast('Could not save video: '+(e.message||'check Firestore rules'),'error');
+    btn.disabled=false;btn.textContent='Add Video';
   }
 }
 async function loadGalleryAdminList(){
@@ -2929,8 +2938,8 @@ async function loadGalleryAdminList(){
     const snap=await db.collection('galleryVideos').orderBy('createdAt','desc').get();
     const videos=snap.docs.map(d=>({...d.data(),docId:d.id}));
     wrap.innerHTML=videos.length?videos.map(v=>`<div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--gray-100);">
-      <video src="${v.videoUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;background:var(--black);" muted></video>
-      <div style="flex:1;"><strong>${v.caption||'Untitled'}</strong></div>
+      <div style="width:80px;height:80px;border-radius:6px;background:var(--black);overflow:hidden;flex-shrink:0;display:flex;">${renderVideoThumb(v.videoUrl).replace('<img ','<img style="width:100%;height:100%;object-fit:cover;" ').replace('<video ','<video style="width:100%;height:100%;object-fit:cover;" ')}</div>
+      <div style="flex:1;"><strong>${v.caption||'Untitled'}</strong>${getYouTubeId(v.videoUrl)?'<br><span style="font-size:11px;color:var(--gray-400);">YouTube</span>':''}</div>
       <button class="btn btn-sm btn-red" onclick="deleteGalleryVideo('${v.docId}')">Delete</button>
     </div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--gray-400);">No gallery videos yet</div>';
   }catch(e){wrap.innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load videos</div>';}
@@ -2945,8 +2954,8 @@ async function loadGalleryPage(){
   try{
     const snap=await db.collection('galleryVideos').orderBy('createdAt','desc').get();
     const videos=snap.docs.map(d=>d.data());
-    grid.innerHTML=videos.length?videos.map(v=>`<div class="gallery-card" onclick="openGalleryLightbox('${v.videoUrl}')">
-      <video src="${v.videoUrl}" muted preload="metadata"></video>
+    grid.innerHTML=videos.length?videos.map(v=>`<div class="gallery-card" onclick="openGalleryLightbox('${v.videoUrl.replace(/'/g,"\\'")}')">
+      ${renderVideoThumb(v.videoUrl)}
       <div class="gallery-card-play"><span>▶</span></div>
       ${v.caption?`<div class="gallery-card-caption">${v.caption}</div>`:''}
     </div>`).join(''):'<div class="gallery-empty">No gallery videos yet. Check back soon!</div>';
@@ -2959,8 +2968,8 @@ async function loadHomeGalleryTeaser(){
     const section=document.getElementById('home-gallery-teaser');
     const row=document.getElementById('home-gallery-row');
     if(videos.length){
-      row.innerHTML=videos.map(v=>`<div class="gallery-card" onclick="openGalleryLightbox('${v.videoUrl}')">
-        <video src="${v.videoUrl}" muted preload="metadata"></video>
+      row.innerHTML=videos.map(v=>`<div class="gallery-card" onclick="openGalleryLightbox('${v.videoUrl.replace(/'/g,"\\'")}')">
+        ${renderVideoThumb(v.videoUrl)}
         <div class="gallery-card-play"><span>▶</span></div>
         ${v.caption?`<div class="gallery-card-caption">${v.caption}</div>`:''}
       </div>`).join('');
@@ -2971,7 +2980,7 @@ async function loadHomeGalleryTeaser(){
 function openGalleryLightbox(videoUrl){
   const box=document.createElement('div');
   box.className='gallery-lightbox';
-  box.innerHTML=`<button class="gallery-lightbox-close" onclick="this.parentElement.remove()">&times;</button><video src="${videoUrl}" controls autoplay></video>`;
+  box.innerHTML=`<button class="gallery-lightbox-close" onclick="this.parentElement.remove()">&times;</button>${renderVideoEmbed(videoUrl,'autoplay')}`;
   box.onclick=(e)=>{if(e.target===box)box.remove();};
   document.body.appendChild(box);
 }
