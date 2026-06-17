@@ -124,15 +124,15 @@ ul{list-style:none;}
 .nav-top-links{display:flex;gap:16px;}
 .nav-top-links a{font-size:12px;color:rgba(255,255,255,0.6);transition:color 0.2s;}
 .nav-top-links a:hover{color:var(--white);}
-.nav-main{background:var(--white);border-bottom:1px solid var(--gray-200);padding:14px 0;}
-.nav-main-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;}
-.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.nav-logo-mark{width:42px;height:42px;background:var(--market-orange);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.nav-main{background:linear-gradient(135deg,#fffaf2 0%,#fff3e6 100%);border-bottom:2px solid var(--market-orange);padding:14px 0;}
+.nav-main-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;min-width:0;}
+.nav-logo-mark{width:42px;height:42px;background:var(--market-orange);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .nav-logo-mark span{color:var(--white);font-family:var(--font-display);font-size:22px;letter-spacing:1px;}
-.nav-logo-text{display:flex;flex-direction:column;line-height:1.1;}
-.nav-logo-text .name{font-family:var(--font-display);font-size:22px;letter-spacing:2px;}
-.nav-logo-text .tagline{font-size:9px;color:var(--gray-400);letter-spacing:3px;text-transform:uppercase;}
-.nav-search{flex:1;max-width:620px;}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1.1;min-width:0;overflow:hidden;}
+.nav-logo-text .name{font-family:var(--font-display);font-size:22px;letter-spacing:2px;white-space:nowrap;}
+.nav-logo-text .tagline{font-size:9px;color:var(--gray-400);letter-spacing:3px;text-transform:uppercase;white-space:nowrap;}
+.nav-search{flex:1;max-width:620px;min-width:0;}
 .nav-search-form{display:flex;height:44px;border:2px solid var(--market-navy);border-radius:var(--radius-sm);overflow:hidden;}
 .nav-search-form input{flex:1;border:none;padding:0 16px;font-size:14px;outline:none;min-width:0;}
 .nav-search-form button{width:52px;flex-shrink:0;background:var(--market-orange);color:var(--white);font-size:18px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;transition:var(--transition);}
@@ -142,12 +142,13 @@ ul{list-style:none;}
 .nav-links a:hover,.nav-links a.active{color:var(--black);border-bottom-color:var(--black);}
 .nav-links a.jersey-link:hover,.nav-links a.jersey-link.active{border-bottom-color:var(--jersey-red);color:var(--jersey-red);}
 .nav-links a.palm-link:hover,.nav-links a.palm-link.active{border-bottom-color:var(--palm-green);color:var(--palm-green);}
-.nav-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-.nav-icon-btn{width:40px;height:40px;border-radius:var(--radius);background:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gray-800);transition:var(--transition);cursor:pointer;position:relative;}
+.nav-actions{display:flex;align-items:center;gap:2px;flex-shrink:0;}
+.nav-icon-btn{width:38px;height:38px;border-radius:var(--radius);background:none;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--gray-800);transition:var(--transition);cursor:pointer;position:relative;flex-shrink:0;}
 .nav-icon-btn:hover{background:var(--gray-100);}
 .mobile-search-icon{display:none;}
 .cart-badge{position:absolute;top:4px;right:4px;background:var(--jersey-red);color:var(--white);width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-.nav-mobile-toggle{display:none;background:none;font-size:22px;padding:8px;cursor:pointer;}
+.nav-mobile-toggle{display:none;background:none;font-size:20px;padding:6px;cursor:pointer;flex-shrink:0;width:38px;height:38px;border-radius:var(--radius);}
+.nav-mobile-toggle:hover{background:var(--gray-100);}
 .nav-mobile{display:block;max-height:0;overflow:hidden;background:var(--white);border-top:1px solid var(--gray-200);padding:0 20px;transition:max-height 0.3s ease,padding 0.3s ease;}
 .nav-mobile:not(.hidden){max-height:80vh;overflow-y:auto;padding:16px 20px;}
 .nav-mobile a{display:block;padding:12px 0;font-size:15px;font-weight:500;border-bottom:1px solid var(--gray-100);}
@@ -660,8 +661,8 @@ tr:hover td{background:var(--gray-100);}
           <span class="cart-badge hidden" id="cart-count">0</span>
         </button>
         <button class="nav-icon-btn" id="auth-nav-btn" onclick="handleAuthNav()" title="Account">👤</button>
+        <button class="nav-mobile-toggle" onclick="toggleMobileNav()">☰</button>
       </div>
-      <button class="nav-mobile-toggle" onclick="toggleMobileNav()">☰</button>
     </div>
     <div class="nav-mobile hidden" id="mobile-nav">
       <a href="#" onclick="showPage('home');toggleMobileNav()">Home</a>
@@ -1024,7 +1025,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-16-3)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-16-4)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
