@@ -213,7 +213,9 @@ ul{list-style:none;}
 
 /* ===== HOME HERO ===== */
 .hero{position:relative;background:var(--black);overflow:hidden;margin-top:0;padding-top:0;}
-.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a0a14 40%,#0a1a0a 100%);}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a0a14 40%,#0a1a0a 100%);background-size:cover;background-position:center;opacity:0;transition:opacity 0.6s ease;}
+.hero-bg.active{opacity:1;}
+.hero-bg.has-image::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,8,0.94) 0%,rgba(8,8,8,0.75) 45%,rgba(8,8,8,0.35) 100%);}
 .hero-bg::before{content:'';position:absolute;top:-50%;right:-20%;width:700px;height:700px;background:radial-gradient(circle,rgba(224,32,32,0.15) 0%,transparent 70%);}
 .hero-bg::after{content:'';position:absolute;bottom:-30%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(26,107,42,0.15) 0%,transparent 70%);}
 .hero-banner-grid{position:relative;z-index:2;display:grid;grid-template-columns:2fr 1fr;gap:20px;padding:40px 0;}
@@ -843,11 +845,13 @@ tr:hover td{background:var(--gray-100);}
 
   <!-- HERO BANNER -->
   <section class="hero">
-    <div class="hero-bg"></div>
+    <div class="hero-bg active" id="hero-bg-0"></div>
+    <div class="hero-bg" id="hero-bg-1"></div>
+    <div class="hero-bg" id="hero-bg-2"></div>
     <div class="container">
       <div class="hero-banner-grid">
         <div class="hero-carousel">
-          <div class="hero-slide active">
+          <div class="hero-slide active" id="hero-slide-0">
             <div class="hero-badge">🏆 The Serial Entrepreneur</div>
             <h1>
               <span>PREMIUM</span>
@@ -860,7 +864,7 @@ tr:hover td{background:var(--gray-100);}
               <button class="btn btn-green" onclick="showPage('palmoil')">🌿 Shop Palm Oil</button>
             </div>
           </div>
-          <div class="hero-slide">
+          <div class="hero-slide" id="hero-slide-1">
             <div class="hero-badge badge-red-bg">🔥 Up To 30% Off</div>
             <h1>
               <span>JERSEY</span>
@@ -870,7 +874,7 @@ tr:hover td{background:var(--gray-100);}
             <p class="hero-desc">Authentic-style club &amp; national team jerseys at prices that won't get red-carded.</p>
             <div class="hero-ctas"><button class="btn btn-red" onclick="showPage('jerseys')">Shop The Sale &rarr;</button></div>
           </div>
-          <div class="hero-slide">
+          <div class="hero-slide" id="hero-slide-2">
             <div class="hero-badge badge-green-bg">🌲 Farm Fresh</div>
             <h1>
               <span>PURE</span>
@@ -1125,7 +1129,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-17-12)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-18-1)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -2847,6 +2851,23 @@ async function renderAdminBanners(el){
     <div id="banners-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div>
   </div>
   <div class="admin-panel" style="margin-top:24px;">
+    <h3>MAIN HERO SLIDE IMAGES</h3>
+    <p class="form-text" style="margin-bottom:16px;">This is the big rotating slider at the very top of the homepage (Premium Quality Products / Jersey Season Sale / Pure Palm Oil Delivered). Add an image link for each slide to show a photo behind the text instead of a plain background.</p>
+    <div class="form-group"><label class="form-label">Slide 1 Image &mdash; "Premium Quality Products"</label>
+      <input class="form-control" id="hero-slide-0-url" placeholder="https://i.ibb.co/xxxxxxx/hero1.jpg" oninput="previewHeroSlideUrl(0)">
+      <img id="hero-slide-0-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin-top:10px;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+    </div>
+    <div class="form-group"><label class="form-label">Slide 2 Image &mdash; "Jersey Season Sale"</label>
+      <input class="form-control" id="hero-slide-1-url" placeholder="https://i.ibb.co/xxxxxxx/hero2.jpg" oninput="previewHeroSlideUrl(1)">
+      <img id="hero-slide-1-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin-top:10px;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+    </div>
+    <div class="form-group"><label class="form-label">Slide 3 Image &mdash; "Pure Palm Oil Delivered"</label>
+      <input class="form-control" id="hero-slide-2-url" placeholder="https://i.ibb.co/xxxxxxx/hero3.jpg" oninput="previewHeroSlideUrl(2)">
+      <img id="hero-slide-2-preview" style="max-width:200px;max-height:100px;border-radius:8px;margin-top:10px;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+    </div>
+    <button class="btn btn-primary" id="hero-slides-submit-btn" onclick="saveHeroSlideImages()">Save Hero Images</button>
+  </div>
+  <div class="admin-panel" style="margin-top:24px;">
     <h3>HOMEPAGE PROMO TILE IMAGES</h3>
     <p class="form-text" style="margin-bottom:16px;">These are the two small tiles next to the main hero slider ("New Club Kits" and "Palm Oil Bulk Pricing"). Add an image link for each to replace the plain background.</p>
     <div class="form-group"><label class="form-label">Jersey Tile Image URL</label>
@@ -2860,7 +2881,43 @@ async function renderAdminBanners(el){
     <button class="btn btn-primary" id="promo-tiles-submit-btn" onclick="savePromoTileImages()">Save Promo Images</button>
   </div>`;
   loadBannersList();
+  loadHeroSlideAdminForm();
   loadPromoTileAdminForm();
+}
+function previewHeroSlideUrl(i){
+  const url=document.getElementById('hero-slide-'+i+'-url').value.trim();
+  const preview=document.getElementById('hero-slide-'+i+'-preview');
+  if(url){preview.src=url;preview.style.display='block';}
+  else{preview.style.display='none';}
+}
+async function loadHeroSlideAdminForm(){
+  try{
+    const snap=await db.collection('settings').doc('heroSlides').get();
+    if(!snap.exists)return;
+    const data=snap.data();
+    [0,1,2].forEach(i=>{
+      const url=data['slide'+i];
+      if(url){
+        document.getElementById('hero-slide-'+i+'-url').value=url;
+        previewHeroSlideUrl(i);
+      }
+    });
+  }catch(e){console.error('loadHeroSlideAdminForm failed:',e);}
+}
+async function saveHeroSlideImages(){
+  const slide0=document.getElementById('hero-slide-0-url').value.trim();
+  const slide1=document.getElementById('hero-slide-1-url').value.trim();
+  const slide2=document.getElementById('hero-slide-2-url').value.trim();
+  const btn=document.getElementById('hero-slides-submit-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    await db.collection('settings').doc('heroSlides').set({slide0,slide1,slide2,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Hero slide images saved!','success');
+    loadHeroSlideImages();
+  }catch(e){
+    showToast('Could not save: '+(e.message||'check Firestore rules'),'error');
+  }
+  btn.disabled=false;btn.textContent='Save Hero Images';
 }
 function previewPromoTileUrl(which){
   const url=document.getElementById('promo-'+which+'-url').value.trim();
@@ -3374,10 +3431,12 @@ let heroSlideIndex=0,heroAutoplay=null;
 function showHeroSlide(i){
   const slides=document.querySelectorAll('.hero-slide');
   const dots=document.querySelectorAll('.hero-dot');
+  const bgs=document.querySelectorAll('.hero-bg');
   if(!slides.length)return;
   heroSlideIndex=(i+slides.length)%slides.length;
   slides.forEach((s,idx)=>s.classList.toggle('active',idx===heroSlideIndex));
   dots.forEach((d,idx)=>d.classList.toggle('active',idx===heroSlideIndex));
+  bgs.forEach((b,idx)=>b.classList.toggle('active',idx===heroSlideIndex));
 }
 function heroNext(){showHeroSlide(heroSlideIndex+1);}
 function heroPrev(){showHeroSlide(heroSlideIndex-1);}
@@ -3443,6 +3502,21 @@ async function loadFirestoreProducts(){
 }
 
 let bannerSlideIndex=0,bannerAutoplay=null,bannerSlideCount=0;
+async function loadHeroSlideImages(){
+  try{
+    const snap=await db.collection('settings').doc('heroSlides').get();
+    if(!snap.exists)return;
+    const data=snap.data();
+    [0,1,2].forEach(i=>{
+      const url=data['slide'+i];
+      if(url){
+        const el=document.getElementById('hero-bg-'+i);
+        el.style.backgroundImage=`url('${url}')`;
+        el.classList.add('has-image');
+      }
+    });
+  }catch(e){console.error('loadHeroSlideImages failed:',e);}
+}
 async function loadPromoTileImages(){
   try{
     const snap=await db.collection('settings').doc('promoTiles').get();
@@ -3508,6 +3582,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadHomeBanners();
   loadHomeGalleryTeaser();
   loadPromoTileImages();
+  loadHeroSlideImages();
   history.replaceState({page:'home',productId:null},'','#home');
 });
 
