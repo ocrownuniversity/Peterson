@@ -4,6 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peterson &mdash; The Serial Entrepreneur</title>
+<meta name="description" content="Premium club & national team jerseys and pure natural palm oil, delivered nationwide across Nigeria. Trusted. Premium. Delivered.">
+<meta name="keywords" content="jerseys Nigeria, football jersey, palm oil Nigeria, Peterson, club jersey, national team jersey, buy palm oil online">
+<meta name="author" content="Peterson">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ownuniversity.github.io/">
+<!-- Open Graph / Facebook & WhatsApp link previews -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ownuniversity.github.io/">
+<meta property="og:title" content="Peterson — The Serial Entrepreneur">
+<meta property="og:description" content="Premium club & national team jerseys and pure natural palm oil, delivered nationwide across Nigeria.">
+<meta property="og:image" content="https://ownuniversity.github.io/icon-512.png">
+<meta property="og:site_name" content="Peterson">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Peterson — The Serial Entrepreneur">
+<meta name="twitter:description" content="Premium club & national team jerseys and pure natural palm oil, delivered nationwide across Nigeria.">
+<meta name="twitter:image" content="https://ownuniversity.github.io/icon-512.png">
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#f57224">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
@@ -17,6 +34,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
   --black: #0a0a0a;
@@ -314,6 +332,18 @@ ul{list-style:none;}
 .product-card-badge.badge-discount{left:10px;background:var(--jersey-red);color:white;}
 .product-card-badge.badge-featured{right:10px;background:linear-gradient(135deg,#f0b429,#d4940a);color:white;}
 .product-card-photocount{position:absolute;bottom:10px;right:10px;font-size:11px;font-weight:600;padding:4px 9px;border-radius:20px;background:rgba(0,0,0,0.6);color:white;}
+.wishlist-heart{position:absolute;top:48px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:var(--transition);box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:2;}
+.wishlist-heart:hover{transform:scale(1.1);}
+.stock-urgency{font-size:11.5px;font-weight:700;color:var(--jersey-red);margin-bottom:8px;}
+.empty-state{text-align:center;padding:60px 24px;}
+.empty-state-icon{font-size:48px;margin-bottom:16px;opacity:0.6;}
+.empty-state h3{font-family:var(--font-display);font-size:22px;letter-spacing:1px;margin-bottom:8px;}
+.empty-state p{color:var(--gray-400);font-size:14px;margin-bottom:24px;max-width:340px;margin-left:auto;margin-right:auto;}
+.product-card-skeleton{background:var(--white);border:1px solid var(--gray-200);border-radius:14px;overflow:hidden;}
+.skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-200) 37%,var(--gray-100) 63%);background-size:400% 100%;animation:skel-shimmer 1.4s ease infinite;}
+.skel-img{aspect-ratio:1;width:100%;}
+.skel-line{height:12px;margin:10px 14px;border-radius:4px;}
+@keyframes skel-shimmer{0%{background-position:100% 50%;}100%{background-position:0 50%;}}
 .product-card-soldout{position:absolute;inset:0;background:rgba(20,20,20,0.55);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;}
 .product-card.out-of-stock{cursor:default;}
 .product-card-body{padding:14px;}
@@ -420,6 +450,8 @@ footer{background:var(--black);padding:64px 0 0;}
 
 /* ===== PRODUCT DETAIL ===== */
 .product-detail{padding:48px 0;}
+.related-products-section{padding:0 0 60px;}
+.related-products-section .scroll-row .product-card{flex:0 0 220px;}
 .product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
 .product-images{position:sticky;top:174px;}
 .product-main-img{width:100%;aspect-ratio:1;object-fit:cover;object-position:top center;border-radius:12px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:120px;overflow:hidden;}
@@ -559,6 +591,8 @@ tr:hover td{background:var(--gray-100);}
 .toggle-switch input:checked + .toggle-slider{background:var(--palm-green);}
 .toggle-switch input:checked + .toggle-slider::before{transform:translateX(24px);}
 .admin-panel{background:var(--white);border-radius:12px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;}
+.analytics-alert{background:#fff3e0;border:1px solid #f5c542;color:#7a5500;padding:14px 18px;border-radius:var(--radius);margin-bottom:24px;font-size:14px;}
+.analytics-alert a{color:#7a5500;text-decoration:underline;font-weight:700;}
 .admin-panel h3{font-family:var(--font-display);font-size:22px;letter-spacing:1px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gray-200);}
 .img-upload-area{border:2px dashed var(--gray-200);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:var(--transition);}
 .img-upload-area:hover{border-color:var(--gray-400);}
@@ -920,10 +954,10 @@ tr:hover td{background:var(--gray-100);}
   </section>
 
   <!-- FLASH SALE -->
-  <section class="flash-sale" id="flash-sale">
+  <section class="flash-sale hidden" id="flash-sale">
     <div class="container">
       <div class="flash-sale-header">
-        <div class="flash-sale-title"><span class="flash-icon">🔥</span><h2>FLASH SALES</h2></div>
+        <div class="flash-sale-title"><span class="flash-icon">🔥</span><h2 id="flash-sale-name">FLASH SALES</h2></div>
         <div class="flash-timer">Ends in <span id="flash-countdown">00:00:00</span></div>
         <button class="btn btn-sm btn-outline-white" onclick="showPage('shop')">See All &rarr;</button>
       </div>
@@ -974,7 +1008,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
         <button class="btn btn-outline" onclick="showPage('shop')">View All Products &rarr;</button>
       </div>
-      <div class="products-grid" id="featured-products"></div>
+      <div class="products-grid" id="featured-products"><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div></div>
     </div>
   </section>
 
@@ -1132,7 +1166,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-18-2)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-18-3)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1180,7 +1214,7 @@ tr:hover td{background:var(--gray-100);}
             <option value="name-asc">Name: A-Z</option>
           </select>
         </div>
-        <div class="products-grid" id="shop-products"></div>
+        <div class="products-grid" id="shop-products"><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div></div>
       </div>
     </div>
   </div>
@@ -1196,7 +1230,7 @@ tr:hover td{background:var(--gray-100);}
     </div>
   </div>
   <div class="container" style="padding:48px 20px;">
-    <div class="products-grid" id="jersey-products"></div>
+    <div class="products-grid" id="jersey-products"><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div></div>
   </div>
 </div>
 
@@ -1210,7 +1244,7 @@ tr:hover td{background:var(--gray-100);}
     </div>
   </div>
   <div class="container" style="padding:48px 20px;">
-    <div class="products-grid" id="palmoil-products"></div>
+    <div class="products-grid" id="palmoil-products"><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div><div class="product-card-skeleton"><div class="skel skel-img"></div><div class="skel skel-line" style="width:60%;"></div><div class="skel skel-line" style="width:90%;"></div><div class="skel skel-line" style="width:40%;"></div></div></div>
   </div>
 </div>
 
@@ -1226,6 +1260,10 @@ tr:hover td{background:var(--gray-100);}
         </div>
         <div class="product-info" id="product-info"></div>
       </div>
+    </div>
+    <div class="related-products-section" id="related-products-section" style="display:none;">
+      <h3 class="section-title" style="font-size:24px;">YOU MAY ALSO LIKE</h3>
+      <div class="scroll-row" id="related-products-row"></div>
     </div>
   </div>
 </div>
@@ -1339,6 +1377,7 @@ tr:hover td{background:var(--gray-100);}
         <div class="account-menu">
           <a href="#" onclick="showAccountTab('dashboard')" id="tab-dashboard" class="active">🏠 Dashboard</a>
           <a href="#" onclick="showAccountTab('orders')" id="tab-orders">📦 My Orders</a>
+          <a href="#" onclick="showAccountTab('wishlist')" id="tab-wishlist">❤️ Wishlist</a>
           <a href="#" onclick="showAccountTab('profile')" id="tab-profile">👤 Profile</a>
           <a href="#" onclick="signOutUser()">🚪 Sign Out</a>
         </div>
@@ -1552,6 +1591,7 @@ tr:hover td{background:var(--gray-100);}
           <div class="admin-nav-label">Sales</div>
           <a href="#" onclick="adminTab('orders')" id="admin-tab-orders">🛒 All Orders</a>
           <a href="#" onclick="adminTab('coupons')" id="admin-tab-coupons">🏷️ Coupons</a>
+          <a href="#" onclick="adminTab('flash-sale')" id="admin-tab-flash-sale">🔥 Flash Sale</a>
           <a href="#" onclick="adminTab('reviews')" id="admin-tab-reviews">⭐ Reviews</a>
         </div>
         <div class="admin-nav-section">
@@ -1611,6 +1651,7 @@ const ADMIN_EMAIL = 'olakunlep62@gmail.com';
 let currentUser = null;
 let isAdmin = false;
 let cart = JSON.parse(localStorage.getItem('peterson_cart') || '[]');
+let wishlistIds = []; // array of product IDs in the current user's wishlist (loaded from Firestore on login)
 let allProducts = [];
 let currentProduct = null;
 let selectedSize = null;
@@ -1680,6 +1721,53 @@ function updateCartCount(){
   if(total>0){badge.textContent=total;badge.classList.remove('hidden');}
   else{badge.classList.add('hidden');}
 }
+// ===== WISHLIST =====
+async function toggleWishlist(productId){
+  if(!currentUser){showToast('Please sign in to save items to your wishlist','error');showPage('auth');return;}
+  const idx=wishlistIds.indexOf(productId);
+  try{
+    if(idx>-1){
+      await db.collection('users').doc(currentUser.uid).collection('wishlist').doc(productId).delete();
+      wishlistIds.splice(idx,1);
+      showToast('Removed from wishlist','info');
+    }else{
+      await db.collection('users').doc(currentUser.uid).collection('wishlist').doc(productId).set({productId,addedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      wishlistIds.push(productId);
+      showToast('Added to wishlist ❤️','success');
+    }
+    document.querySelectorAll(`.wishlist-heart[data-pid="${productId}"]`).forEach(h=>h.classList.toggle('active',wishlistIds.includes(productId)));
+  }catch(e){showToast('Could not update wishlist: '+(e.message||''),'error');}
+}
+async function loadWishlistIds(){
+  if(!currentUser){wishlistIds=[];return;}
+  try{
+    const snap=await db.collection('users').doc(currentUser.uid).collection('wishlist').get();
+    wishlistIds=snap.docs.map(d=>d.id);
+  }catch(e){console.error('loadWishlistIds failed:',e);wishlistIds=[];}
+}
+async function loadUserWishlist(){
+  const grid=document.getElementById('user-wishlist-grid');
+  if(!currentUser){grid.innerHTML=renderEmptyState('❤️','Sign in to see your wishlist','Save products you love and find them here anytime.','Sign In','auth');return;}
+  try{
+    await loadWishlistIds();
+    if(!wishlistIds.length){
+      grid.innerHTML=renderEmptyState('❤️','Your wishlist is empty','Tap the heart icon on any product to save it here for later.','Browse Products','shop');
+      return;
+    }
+    const products=getProducts().filter(p=>wishlistIds.includes(p.id));
+    grid.innerHTML=`<div class="products-grid">${products.map(p=>createProductCard(p)).join('')}</div>`;
+  }catch(e){grid.innerHTML='<p style="color:var(--gray-400);">Could not load your wishlist.</p>';}
+}
+function renderEmptyState(icon,title,subtitle,btnLabel,btnPageOrAction){
+  const isFunction=typeof btnPageOrAction==='string'&&btnPageOrAction.includes('(');
+  const action=isFunction?btnPageOrAction:`showPage('${btnPageOrAction}')`;
+  return `<div class="empty-state">
+    <div class="empty-state-icon">${icon}</div>
+    <h3>${title}</h3>
+    <p>${subtitle}</p>
+    ${btnLabel?`<button class="btn btn-primary" onclick="${action}">${btnLabel}</button>`:''}
+  </div>`;
+}
 function addToCart(productId,qty=1,size=null){
   const p=allProducts.find(x=>x.id===productId)||(sampleProducts.find(x=>x.id===productId));
   if(!p)return;
@@ -1739,8 +1827,10 @@ function toggleCart(){
 function createProductCard(p){
   const disc=p.oldPrice?Math.round((1-p.price/p.oldPrice)*100):0;
   const outOfStock=p.stock<=0;
+  const lowStock=!outOfStock&&p.stock<=5;
   const cardImg=(p.images&&p.images[0])||p.imageUrl;
   const photoCount=(p.images&&p.images.length)||(p.imageUrl?1:0);
+  const isWishlisted=wishlistIds.includes(p.id);
   return `<div class="product-card${outOfStock?' out-of-stock':''}" onclick="showProductDetail('${p.id}')">
     <div class="product-card-imgwrap">
       ${cardImg?`<img class="product-card-img" src="${cardImg}" alt="${p.name}" loading="lazy">`:`<div class="product-card-img-placeholder">${p.emoji}</div>`}
@@ -1748,6 +1838,7 @@ function createProductCard(p){
       ${p.featured?`<span class="product-card-badge badge-featured">⭐ Best Seller</span>`:''}
       ${photoCount>1?`<span class="product-card-photocount">📷 ${photoCount}</span>`:''}
       ${outOfStock?`<div class="product-card-soldout">Out of Stock</div>`:''}
+      <button class="wishlist-heart${isWishlisted?' active':''}" data-pid="${p.id}" onclick="event.stopPropagation();toggleWishlist('${p.id}')" title="Save to wishlist">${isWishlisted?'❤️':'🤍'}</button>
     </div>
     <div class="product-card-body">
       <div class="product-card-cat">${p.subcat}</div>
@@ -1756,6 +1847,7 @@ function createProductCard(p){
         <span class="stars">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</span>
         <span class="product-card-reviews">(${p.reviews})</span>
       </div>
+      ${lowStock?`<div class="stock-urgency">🔥 Only ${p.stock} left</div>`:''}
       <div class="product-card-footer">
         <div class="product-price">₦${p.price.toLocaleString()}${p.oldPrice?`<span class="old">₦${p.oldPrice.toLocaleString()}</span>`:''}</div>
         <button class="product-card-addbtn" onclick="event.stopPropagation();addToCart('${p.id}')" title="Add to cart" ${outOfStock?'disabled':''}>🛒</button>
@@ -1835,6 +1927,14 @@ function renderPalmOil(){
 function renderShop(){
   filterProducts();
 }
+function clearShopFilters(){
+  const search=document.getElementById('search-input');if(search)search.value='';
+  const allRadio=document.querySelector('input[name="cat"][value="all"]');if(allRadio)allRadio.checked=true;
+  const priceMin=document.getElementById('price-min');if(priceMin)priceMin.value='';
+  const priceMax=document.getElementById('price-max');if(priceMax)priceMax.value='';
+  const sortSelect=document.getElementById('sort-select');if(sortSelect)sortSelect.value='default';
+  filterProducts();
+}
 function filterProducts(){
   let products=[...getProducts()];
   const search=(document.getElementById('search-input')||{}).value?.toLowerCase()||'';
@@ -1851,7 +1951,7 @@ function filterProducts(){
   else if(sort==='name-asc')products.sort((a,b)=>a.name.localeCompare(b.name));
   const grid=document.getElementById('shop-products');
   const count=document.getElementById('product-count');
-  if(grid)grid.innerHTML=products.length?products.map(createProductCard).join(''):'<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--gray-400);">No products found</div>';
+  if(grid)grid.innerHTML=products.length?products.map(createProductCard).join(''):`<div style="grid-column:1/-1;">${renderEmptyState('🔍','No products found','Try adjusting your search or filters to find what you\'re looking for.','Clear Filters','clearShopFilters()')}</div>`;
   if(count)count.textContent=products.length+' products found';
 }
 
@@ -1914,6 +2014,25 @@ function showProductDetail(id,opts={}){
       <div class="product-meta-item">✅ 100% Authentic</div>
       <div class="product-meta-item">🚚 Fast delivery across Nigeria</div>
     </div>`;
+  renderRelatedProducts(p);
+  trackRecentlyViewed(p.id);
+}
+function trackRecentlyViewed(productId){
+  try{
+    let recent=JSON.parse(localStorage.getItem('peterson_recently_viewed')||'[]');
+    recent=recent.filter(id=>id!==productId);
+    recent.unshift(productId);
+    recent=recent.slice(0,12);
+    localStorage.setItem('peterson_recently_viewed',JSON.stringify(recent));
+  }catch(e){}
+}
+function renderRelatedProducts(p){
+  const section=document.getElementById('related-products-section');
+  const row=document.getElementById('related-products-row');
+  const related=getProducts().filter(x=>x.id!==p.id&&(x.subcat===p.subcat||x.cat===p.cat)).slice(0,10);
+  if(!related.length){section.style.display='none';return;}
+  row.innerHTML=related.map(r=>createProductCard(r)).join('');
+  section.style.display='block';
 }
 function selectSize(s,btn){
   selectedSize=s;
@@ -2315,6 +2434,7 @@ auth.onAuthStateChanged(async user=>{
     if(authBtn){authBtn.textContent='👤';authBtn.title=user.displayName||user.email;}
     if(mobileAuth)mobileAuth.textContent=isAdmin?'🔧 Admin Panel':'My Account';
     if(mobileAdminLink)mobileAdminLink.classList.toggle('hidden',!isAdmin);
+    await loadWishlistIds();
     if(isAdmin){
       // Add admin link to navbar
       let adminLink=document.getElementById('nav-admin');
@@ -2325,7 +2445,7 @@ auth.onAuthStateChanged(async user=>{
       refreshResetRequestBadge();
     }
   }else{
-    currentUser=null;isAdmin=false;
+    currentUser=null;isAdmin=false;wishlistIds=[];
     if(authBtn){authBtn.textContent='👤';authBtn.title='Sign In';}
     if(mobileAuth)mobileAuth.textContent='Sign In / Register';
     if(mobileAdminLink)mobileAdminLink.classList.add('hidden');
@@ -2337,7 +2457,7 @@ function renderAccount(){
   showAccountTab('dashboard');
 }
 function showAccountTab(tab){
-  ['dashboard','orders','profile'].forEach(t=>{
+  ['dashboard','orders','wishlist','profile'].forEach(t=>{
     const el=document.getElementById('tab-'+t);
     if(el)el.classList.toggle('active',t===tab);
   });
@@ -2363,6 +2483,9 @@ function showAccountTab(tab){
   }else if(tab==='orders'){
     content.innerHTML='<h2>MY ORDERS</h2><div id="user-orders-list"><div class="spinner" style="margin:40px auto;"></div></div>';
     loadUserOrders();
+  }else if(tab==='wishlist'){
+    content.innerHTML='<h2>MY WISHLIST</h2><div id="user-wishlist-grid"><div class="spinner" style="margin:40px auto;"></div></div>';
+    loadUserWishlist();
   }else if(tab==='profile'){
     content.innerHTML=`<h2>MY PROFILE</h2>
       <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="profile-name" value="${currentUser?.displayName||''}"></div>
@@ -2403,7 +2526,7 @@ async function loadUserOrders(){
   try{
     const snap=await db.collection('orders').where('userId','==',currentUser.uid).orderBy('createdAt','desc').get();
     const list=document.getElementById('user-orders-list');
-    if(snap.empty){list.innerHTML='<p style="color:var(--gray-400);">No orders yet. <a href="#" onclick="showPage(\'shop\')" style="color:var(--black);font-weight:700;">Start shopping &rarr;</a></p>';return;}
+    if(snap.empty){list.innerHTML=renderEmptyState('📦','No orders yet','Once you place an order, it will show up here so you can track it.','Start Shopping','shop');return;}
     list.innerHTML=snap.docs.map(doc=>{
       const o=doc.data();
       return `<div class="order-row">
@@ -2428,7 +2551,7 @@ function adminTab(tab){
   document.querySelectorAll('.admin-nav a').forEach(a=>{a.classList.remove('active');});
   const el=document.getElementById('admin-tab-'+tab);
   if(el)el.classList.add('active');
-  const titles={overview:'Dashboard',analytics:'Analytics',products:'All Products','add-product':'Add Product','bulk-import':'Bulk Import',banners:'Banners',gallery:'Gallery Videos',orders:'All Orders',coupons:'Coupons',reviews:'Reviews',customers:'Users',chats:'Chats','manage-admins':'Manage Admins','reset-requests':'Reset Requests','payment-settings':'Payment Settings','paystack-settings':'Paystack Settings','delivery-settings':'Delivery & Pickup'};
+  const titles={overview:'Dashboard',analytics:'Analytics',products:'All Products','add-product':'Add Product','bulk-import':'Bulk Import',banners:'Banners',gallery:'Gallery Videos',orders:'All Orders',coupons:'Coupons','flash-sale':'Flash Sale',reviews:'Reviews',customers:'Users',chats:'Chats','manage-admins':'Manage Admins','reset-requests':'Reset Requests','payment-settings':'Payment Settings','paystack-settings':'Paystack Settings','delivery-settings':'Delivery & Pickup'};
   document.getElementById('admin-topbar-title').textContent=titles[tab]||tab;
   const content=document.getElementById('admin-content');
   if(tab==='overview')renderAdminOverview(content);
@@ -2447,6 +2570,7 @@ function adminTab(tab){
   else if(tab==='paystack-settings')renderAdminPaystackSettings(content);
   else if(tab==='delivery-settings')renderAdminDeliverySettings(content);
   else if(tab==='coupons')renderAdminCoupons(content);
+  else if(tab==='flash-sale')renderAdminFlashSale(content);
   else if(tab==='reviews')renderAdminReviews(content);
   closeAdminSidebar();
 }
@@ -2609,10 +2733,11 @@ async function deleteProductConfirm(id){
   }
 }
 async function renderAdminOrders(el){
-  el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>All Orders</h4></div><div id="all-orders-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
+  el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>All Orders</h4><button class="btn btn-outline btn-sm" onclick="exportOrdersCSV()">⬇️ Export CSV</button></div><div id="all-orders-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
   try{
     const snap=await db.collection('orders').orderBy('createdAt','desc').get();
     const orders=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    window._ordersExportCache=orders;
     document.getElementById('all-orders-list').innerHTML=orders.length?`<table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Delivery</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody>${orders.map(o=>`<tr>
       <td><strong>${o.orderId}</strong></td>
       <td>${o.customer?.name||'-'}<br><span style="font-size:11px;color:var(--gray-400);">${o.customer?.phone||''}</span></td>
@@ -2632,6 +2757,34 @@ async function renderAdminOrders(el){
     </tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">No orders yet</div>';
   }catch(e){document.getElementById('all-orders-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load orders</div>';}
 }
+function downloadCSV(filename,rows){
+  const csv=rows.map(row=>row.map(cell=>{
+    const s=String(cell??'');
+    return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+  }).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportOrdersCSV(){
+  const orders=window._ordersExportCache||[];
+  if(!orders.length){showToast('No orders to export','info');return;}
+  const rows=[['Order ID','Customer Name','Email','Phone','Items','Delivery Method','State/Station','Delivery Fee','Subtotal','Discount','Total','Payment Method','Status','Date']];
+  orders.forEach(o=>{
+    rows.push([
+      o.orderId,o.customer?.name||'',o.customer?.email||'',o.customer?.phone||'',
+      (o.items||[]).map(i=>`${i.name} x${i.qty}`).join('; '),
+      o.delivery?.method||'',o.delivery?.method==='pickup'?(o.delivery?.pickupStation||''):(o.delivery?.state||''),
+      o.deliveryFee||0,o.subtotal||0,o.discount||0,o.total||0,o.paymentMethod||'',o.status||'',
+      o.createdAt?.toDate?.()?.toLocaleString()||''
+    ]);
+  });
+  downloadCSV('peterson-orders-'+new Date().toISOString().slice(0,10)+'.csv',rows);
+  showToast('Orders exported!','success');
+}
 async function updateOrderStatus(docId,status){
   if(!status||status==='Update...')return;
   try{
@@ -2640,10 +2793,11 @@ async function updateOrderStatus(docId,status){
   }catch(e){showToast('Could not update order','error');}
 }
 async function renderAdminCustomers(el){
-  el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>Customers</h4></div><div id="customers-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
+  el.innerHTML=`<div class="admin-table-wrap"><div class="admin-table-header"><h4>Customers</h4><button class="btn btn-outline btn-sm" onclick="exportCustomersCSV()">⬇️ Export CSV</button></div><div id="customers-list"><div style="padding:24px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div></div></div>`;
   try{
     const snap=await db.collection('users').get();
     const users=snap.docs.map(d=>d.data());
+    window._customersExportCache=users;
     document.getElementById('customers-list').innerHTML=users.length?`<table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th></tr></thead><tbody>${users.map(u=>`<tr>
       <td><strong>${u.name||'-'}</strong></td>
       <td>${u.email}</td>
@@ -2652,6 +2806,16 @@ async function renderAdminCustomers(el){
       <td>${u.createdAt?.toDate?.()?.toLocaleDateString()||'-'}</td>
     </tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">No customers yet</div>';
   }catch(e){document.getElementById('customers-list').innerHTML='<div style="padding:24px;text-align:center;color:var(--gray-400);">Could not load customers</div>';}
+}
+function exportCustomersCSV(){
+  const users=window._customersExportCache||[];
+  if(!users.length){showToast('No customers to export','info');return;}
+  const rows=[['Name','Email','Phone','Role','Joined']];
+  users.forEach(u=>{
+    rows.push([u.name||'',u.email||'',u.phone||'',u.role||'customer',u.createdAt?.toDate?.()?.toLocaleDateString()||'']);
+  });
+  downloadCSV('peterson-customers-'+new Date().toISOString().slice(0,10)+'.csv',rows);
+  showToast('Customers exported!','success');
 }
 async function renderAdminPaymentSettings(el){
   // Load current settings
@@ -2734,12 +2898,72 @@ async function deleteCoupon(docId){
   catch(e){showToast('Could not delete','error');}
 }
 
+// ===== FLASH SALE =====
+async function renderAdminFlashSale(el){
+  let sale={name:'',endTime:null,discountPercent:0,active:false,productIds:[]};
+  try{const snap=await db.collection('settings').doc('flashSale').get();if(snap.exists)sale={...sale,...snap.data()};}catch(e){}
+  const products=getProducts();
+  const endTimeLocal=sale.endTime?.toDate?.()?formatDatetimeLocal(sale.endTime.toDate()):'';
+  el.innerHTML=`<div class="admin-panel">
+    <h3>FLASH SALE SETUP</h3>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:var(--gray-100);border-radius:var(--radius);">
+      <span style="font-weight:700;">Sale Active</span>
+      <label class="toggle-switch"><input type="checkbox" id="fs-active" ${sale.active?'checked':''}><span class="toggle-slider"></span></label>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Sale Name</label><input class="form-control" id="fs-name" placeholder="e.g. Weekend Flash Sale" value="${sale.name||''}"></div>
+      <div class="form-group"><label class="form-label">Discount % (applied to selected products)</label><input class="form-control" type="number" id="fs-discount" placeholder="20" value="${sale.discountPercent||''}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Sale Ends At</label><input class="form-control" type="datetime-local" id="fs-endtime" value="${endTimeLocal}"></div>
+    <div class="form-group">
+      <label class="form-label">Products in this sale</label>
+      <p class="form-text" style="margin-bottom:10px;">Check every product that should appear in the Flash Sale row with the discount applied.</p>
+      <div style="max-height:280px;overflow-y:auto;border:1px solid var(--gray-200);border-radius:var(--radius);padding:8px;">
+        ${products.map(p=>`<label style="display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid var(--gray-100);cursor:pointer;">
+          <input type="checkbox" class="fs-product-check" value="${p.id}" ${(sale.productIds||[]).includes(p.id)?'checked':''}>
+          <span style="flex:1;">${p.name}</span><span style="color:var(--gray-400);font-size:12px;">₦${p.price.toLocaleString()}</span>
+        </label>`).join('')}
+      </div>
+    </div>
+    <button class="btn btn-primary" id="fs-submit-btn" onclick="saveFlashSale()">Save Flash Sale</button>
+  </div>`;
+}
+function formatDatetimeLocal(date){
+  const pad=n=>String(n).padStart(2,'0');
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+async function saveFlashSale(){
+  const active=document.getElementById('fs-active').checked;
+  const name=document.getElementById('fs-name').value.trim();
+  const discountPercent=parseFloat(document.getElementById('fs-discount').value)||0;
+  const endTimeStr=document.getElementById('fs-endtime').value;
+  const productIds=Array.from(document.querySelectorAll('.fs-product-check:checked')).map(c=>c.value);
+  if(active&&!endTimeStr){showToast('Please set an end time for the sale','error');return;}
+  if(active&&!productIds.length){showToast('Please select at least one product','error');return;}
+  const btn=document.getElementById('fs-submit-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const endTime=endTimeStr?new Date(endTimeStr):null;
+    await db.collection('settings').doc('flashSale').set({
+      name,discountPercent,active,productIds,
+      endTime:endTime?firebase.firestore.Timestamp.fromDate(endTime):null,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast('Flash sale saved!','success');
+    renderFlashSale();
+  }catch(e){showToast('Could not save: '+(e.message||''),'error');}
+  btn.disabled=false;btn.textContent='Save Flash Sale';
+}
+
 // ===== ANALYTICS =====
+let analyticsCharts={};
 async function renderAdminAnalytics(el){
   el.innerHTML=`<div class="admin-panel"><h3>SALES ANALYTICS</h3><div id="analytics-body"><div class="spinner" style="margin:40px auto;"></div></div></div>`;
   const body=document.getElementById('analytics-body');
+  Object.values(analyticsCharts).forEach(c=>c?.destroy?.());
+  analyticsCharts={};
   try{
-    const snap=await db.collection('orders').get();
+    const snap=await db.collection('orders').orderBy('createdAt','asc').get();
     const orders=snap.docs.map(d=>d.data());
     const revenue=orders.reduce((s,o)=>s+(o.total||0),0);
     const byStatus={};
@@ -2747,28 +2971,68 @@ async function renderAdminAnalytics(el){
     const byCat={jersey:0,palmoil:0};
     orders.forEach(o=>(o.items||[]).forEach(i=>{if(byCat[i.cat]!==undefined)byCat[i.cat]+=(i.price*i.qty);}));
     const products=getProducts();
-    const lowStock=products.filter(p=>p.stock<5);
+    const lowStock=products.filter(p=>p.stock>0&&p.stock<=5);
+    const outOfStock=products.filter(p=>p.stock<=0);
+
+    // Build last-14-days revenue trend
+    const days=[];
+    for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);d.setHours(0,0,0,0);days.push(d);}
+    const dayLabels=days.map(d=>d.toLocaleDateString('en-NG',{month:'short',day:'numeric'}));
+    const dayRevenue=days.map(d=>{
+      const next=new Date(d);next.setDate(next.getDate()+1);
+      return orders.filter(o=>{
+        const t=o.createdAt?.toDate?.();
+        return t&&t>=d&&t<next;
+      }).reduce((s,o)=>s+(o.total||0),0);
+    });
+
     body.innerHTML=`
+      ${(lowStock.length||outOfStock.length)?`<div class="analytics-alert">⚠️ ${outOfStock.length?`<strong>${outOfStock.length} product${outOfStock.length>1?'s':''} out of stock.</strong> `:''}${lowStock.length?`<strong>${lowStock.length} product${lowStock.length>1?'s':''}</strong> running low (5 or fewer left).`:''} <a href="#" onclick="adminTab('products')">View Products &rarr;</a></div>`:''}
       <div class="stat-cards" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
         <div class="stat-card"><div class="stat-icon" style="background:#e0f4e3;">💰</div><div class="stat-num">₦${revenue.toLocaleString()}</div><div class="stat-label">Total Revenue</div></div>
         <div class="stat-card"><div class="stat-icon" style="background:#ffe0e0;">🛒</div><div class="stat-num">${orders.length}</div><div class="stat-label">Total Orders</div></div>
-        <div class="stat-card"><div class="stat-icon" style="background:#fff3e0;">📦</div><div class="stat-num">${orders.length?Math.round(revenue/orders.length).toLocaleString():0}</div><div class="stat-label">Avg. Order Value (₦)</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#fff3e0;">📦</div><div class="stat-num">₦${orders.length?Math.round(revenue/orders.length).toLocaleString():0}</div><div class="stat-label">Avg. Order Value</div></div>
+      </div>
+      <div class="admin-panel" style="margin-bottom:24px;">
+        <h3 style="font-size:16px;">Revenue — Last 14 Days</h3>
+        <div style="height:240px;"><canvas id="chart-revenue-trend"></canvas></div>
       </div>
       <div class="grid-2">
         <div class="admin-panel" style="margin-bottom:0;">
           <h3 style="font-size:16px;">Orders by Status</h3>
-          ${Object.keys(byStatus).length?Object.entries(byStatus).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);"><span class="order-status status-${k}">${k}</span><strong>${v}</strong></div>`).join(''):'<p style="color:var(--gray-400);">No orders yet</p>'}
+          <div style="height:220px;">${Object.keys(byStatus).length?'<canvas id="chart-order-status"></canvas>':'<p style="color:var(--gray-400);">No orders yet</p>'}</div>
         </div>
         <div class="admin-panel" style="margin-bottom:0;">
           <h3 style="font-size:16px;">Revenue by Category</h3>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);"><span class="badge badge-red">Jersey</span><strong>₦${byCat.jersey.toLocaleString()}</strong></div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;"><span class="badge badge-green">Palm Oil</span><strong>₦${byCat.palmoil.toLocaleString()}</strong></div>
+          <div style="height:220px;"><canvas id="chart-category-revenue"></canvas></div>
         </div>
       </div>
       <div class="admin-table-wrap" style="margin-top:24px;">
-        <div class="admin-table-header"><h4>⚠️ Low Stock Products (under 5 units)</h4></div>
-        ${lowStock.length?`<table><thead><tr><th>Product</th><th>Stock</th></tr></thead><tbody>${lowStock.map(p=>`<tr><td>${p.name}</td><td><span class="badge badge-red">${p.stock} left</span></td></tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">All products well stocked</div>'}
+        <div class="admin-table-header"><h4>⚠️ Low Stock Products (5 or fewer units)</h4></div>
+        ${lowStock.length||outOfStock.length?`<table><thead><tr><th>Product</th><th>Stock</th></tr></thead><tbody>${[...outOfStock,...lowStock].map(p=>`<tr><td>${p.name}</td><td><span class="badge ${p.stock<=0?'badge-red':'badge-gold'}">${p.stock<=0?'Out of stock':p.stock+' left'}</span></td></tr>`).join('')}</tbody></table>`:'<div style="padding:24px;text-align:center;color:var(--gray-400);">All products well stocked</div>'}
       </div>`;
+
+    // Render charts
+    const ctx1=document.getElementById('chart-revenue-trend');
+    if(ctx1)analyticsCharts.trend=new Chart(ctx1,{
+      type:'line',
+      data:{labels:dayLabels,datasets:[{label:'Revenue (₦)',data:dayRevenue,borderColor:'#f57224',backgroundColor:'rgba(245,114,36,0.1)',fill:true,tension:0.3}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'₦'+v.toLocaleString()}}}}
+    });
+    if(Object.keys(byStatus).length){
+      const ctx2=document.getElementById('chart-order-status');
+      if(ctx2)analyticsCharts.status=new Chart(ctx2,{
+        type:'doughnut',
+        data:{labels:Object.keys(byStatus),datasets:[{data:Object.values(byStatus),backgroundColor:['#f5c542','#3b82f6','#8b5cf6','#2d9e42','#e02020']}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+      });
+    }
+    const ctx3=document.getElementById('chart-category-revenue');
+    if(ctx3)analyticsCharts.category=new Chart(ctx3,{
+      type:'bar',
+      data:{labels:['Jersey','Palm Oil'],datasets:[{label:'Revenue (₦)',data:[byCat.jersey,byCat.palmoil],backgroundColor:['#e02020','#2d9e42'],borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'₦'+v.toLocaleString()}}}}
+    });
   }catch(e){body.innerHTML='<p style="color:var(--gray-400);">Could not load analytics. '+(e.message||'')+'</p>';}
 }
 
@@ -3449,27 +3713,54 @@ function startHeroAutoplay(){
 }
 
 // ===== FLASH SALE =====
-function renderFlashSale(){
+let flashCountdownInterval=null;
+let activeFlashSale=null;
+async function renderFlashSale(){
+  const section=document.getElementById('flash-sale');
   const el=document.getElementById('flash-products');
-  if(!el)return;
-  const deals=getProducts().filter(p=>p.oldPrice).sort((a,b)=>((1-b.price/b.oldPrice))-((1-a.price/a.oldPrice))).slice(0,8);
-  el.innerHTML=deals.length?deals.map(createProductCard).join(''):'<p style="color:rgba(255,255,255,0.5);padding:24px;">No deals right now &mdash; check back soon.</p>';
+  if(!section||!el)return;
+  try{
+    const snap=await db.collection('settings').doc('flashSale').get();
+    if(!snap.exists||!snap.data().active){section.classList.add('hidden');activeFlashSale=null;return;}
+    const sale=snap.data();
+    const endTime=sale.endTime?.toDate?.()||new Date(sale.endTime);
+    if(!endTime||endTime<=new Date()){section.classList.add('hidden');activeFlashSale=null;return;}
+    activeFlashSale=sale;
+    const productIds=sale.productIds||[];
+    const deals=getProducts().filter(p=>productIds.includes(p.id));
+    if(!deals.length){section.classList.add('hidden');return;}
+    document.getElementById('flash-sale-name').textContent=sale.name||'FLASH SALES';
+    el.innerHTML=deals.map(p=>{
+      const discounted={...p};
+      if(sale.discountPercent){
+        discounted.oldPrice=p.oldPrice||p.price;
+        discounted.price=Math.round(p.price*(1-sale.discountPercent/100));
+      }
+      return createProductCard(discounted);
+    }).join('');
+    section.classList.remove('hidden');
+    startFlashCountdown(endTime);
+  }catch(e){console.error('renderFlashSale failed:',e);section.classList.add('hidden');}
 }
-function startFlashCountdown(){
+function startFlashCountdown(endTime){
+  if(flashCountdownInterval)clearInterval(flashCountdownInterval);
   function update(){
     const now=new Date();
-    const end=new Date(now);
-    end.setHours(24,0,0,0);
-    let diff=Math.max(0,end-now);
+    let diff=Math.max(0,endTime-now);
+    if(diff<=0){
+      clearInterval(flashCountdownInterval);
+      document.getElementById('flash-sale')?.classList.add('hidden');
+      return;
+    }
     const h=Math.floor(diff/3600000);diff%=3600000;
     const m=Math.floor(diff/60000);diff%=60000;
     const s=Math.floor(diff/1000);
     const pad=n=>String(n).padStart(2,'0');
     const el=document.getElementById('flash-countdown');
-    if(el)el.textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+    if(el)el.textContent=h>24?`${Math.floor(h/24)}d ${pad(h%24)}:${pad(m)}:${pad(s)}`:`${pad(h)}:${pad(m)}:${pad(s)}`;
   }
   update();
-  setInterval(update,1000);
+  flashCountdownInterval=setInterval(update,1000);
 }
 function showToast(msg,type='info'){
   const c=document.getElementById('toast-container');
@@ -3581,7 +3872,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadFirestoreProducts();
   showHeroSlide(0);
   startHeroAutoplay();
-  startFlashCountdown();
   loadHomeBanners();
   loadHomeGalleryTeaser();
   loadPromoTileImages();
