@@ -593,6 +593,42 @@ tr:hover td{background:var(--gray-100);}
 .admin-panel{background:var(--white);border-radius:12px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;}
 .analytics-alert{background:#fff3e0;border:1px solid #f5c542;color:#7a5500;padding:14px 18px;border-radius:var(--radius);margin-bottom:24px;font-size:14px;}
 .analytics-alert a{color:#7a5500;text-decoration:underline;font-weight:700;}
+.order-card{background:var(--white);border:1px solid var(--gray-200);border-radius:14px;padding:20px;margin-bottom:16px;}
+.order-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.order-timeline{display:flex;align-items:center;margin-bottom:16px;overflow-x:auto;}
+.order-step{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:60px;}
+.order-step-dot{width:14px;height:14px;border-radius:50%;background:var(--gray-200);border:2px solid var(--gray-300);}
+.order-step.done .order-step-dot{background:var(--palm-green);border-color:var(--palm-green);}
+.order-step-label{font-size:10px;color:var(--gray-400);text-transform:capitalize;text-align:center;}
+.order-step.done .order-step-label{color:var(--palm-green);font-weight:600;}
+.order-step-line{flex:1;height:2px;background:var(--gray-200);min-width:20px;}
+.color-selector,.shipping-calculator{margin-bottom:20px;}
+.color-selector h5,.shipping-calculator h5{font-size:13px;font-weight:700;letter-spacing:0.5px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.color-options{display:flex;flex-wrap:wrap;gap:8px;}
+.color-btn{padding:7px 14px;border-radius:20px;border:2px solid var(--gray-200);background:var(--white);font-size:13px;cursor:pointer;transition:var(--transition);}
+.color-btn.active,.color-btn:hover{border-color:var(--black);background:var(--black);color:var(--white);}
+.size-guide-btn{background:none;border:none;font-size:12px;color:var(--market-orange);cursor:pointer;font-weight:600;text-decoration:underline;}
+.social-proof-bar{margin-bottom:10px;}
+.social-proof{font-size:12px;color:var(--palm-green);font-weight:600;background:#e8f5ea;padding:5px 12px;border-radius:20px;display:inline-block;}
+.btn-whatsapp{background:#25d366;color:white;border-color:#25d366;}
+.btn-whatsapp:hover{background:#1da851;border-color:#1da851;color:white;}
+.review-form{background:var(--gray-100);border-radius:var(--radius);padding:20px;margin-bottom:24px;}
+.star-btn{background:none;border:none;font-size:24px;cursor:pointer;padding:0 3px;transition:var(--transition);}
+.star-btn.active{color:var(--palm-gold);}
+.review-item{padding:16px 0;border-bottom:1px solid var(--gray-100);}
+.review-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+.review-author{font-weight:600;font-size:14px;}
+.review-text{color:var(--gray-600);font-size:14px;line-height:1.7;}
+.faq-item{border-bottom:1px solid var(--gray-200);}
+.faq-question{width:100%;background:none;border:none;padding:16px 0;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;cursor:pointer;text-align:left;gap:12px;}
+.faq-icon{font-size:20px;flex-shrink:0;color:var(--market-orange);}
+.faq-answer{padding:0 0 16px;color:var(--gray-600);font-size:14px;line-height:1.8;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-box{background:var(--white);border-radius:14px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--gray-100);}
+.modal-header h3{font-family:var(--font-display);letter-spacing:1px;}
+.modal-header button{background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-400);}
+.modal-body{padding:24px;}
 .admin-panel h3{font-family:var(--font-display);font-size:22px;letter-spacing:1px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gray-200);}
 .img-upload-area{border:2px dashed var(--gray-200);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:var(--transition);}
 .img-upload-area:hover{border-color:var(--gray-400);}
@@ -1012,6 +1048,17 @@ tr:hover td{background:var(--gray-100);}
     </div>
   </section>
 
+  <!-- RECENTLY VIEWED -->
+  <section class="section hidden" id="recently-viewed-section" style="padding-top:0;">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+        <h2 class="section-title" style="margin:0;">RECENTLY VIEWED</h2>
+        <button class="btn btn-outline btn-sm" onclick="clearRecentlyViewed()">Clear</button>
+      </div>
+      <div class="scroll-row" id="recently-viewed-row"></div>
+    </div>
+  </section>
+
   <!-- GALLERY TEASER -->
   <section class="section gallery-teaser hidden" id="home-gallery-teaser" style="padding-top:0;">
     <div class="container">
@@ -1141,6 +1188,9 @@ tr:hover td{background:var(--gray-100);}
           <h5>Customer Service</h5>
           <ul>
             <li><a href="#" onclick="showPage('delivery')">Delivery Info</a></li>
+            <li><a href="#" onclick="showPage('returns')">Return Policy</a></li>
+            <li><a href="#" onclick="showPage('faq')">FAQ</a></li>
+            <li><a href="#" onclick="showPage('testimonials')">Testimonials</a></li>
             <li><a href="#" onclick="showPage('terms')">Terms of Service</a></li>
             <li><a href="#" onclick="showPage('privacy')">Privacy Policy</a></li>
             <li><a href="#" onclick="showPage('contact')">Contact Us</a></li>
@@ -1166,7 +1216,7 @@ tr:hover td{background:var(--gray-100);}
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-18-3)</span></p>
+        <p>&copy; 2025 Peterson. All rights reserved. The Serial Entrepreneur. <span style="opacity:0.4;">(build 2026-06-18-4)</span></p>
         <div class="footer-bottom-links">
           <a href="#" onclick="showPage('terms')">Terms</a>
           <a href="#" onclick="showPage('privacy')">Privacy</a>
@@ -1264,6 +1314,10 @@ tr:hover td{background:var(--gray-100);}
     <div class="related-products-section" id="related-products-section" style="display:none;">
       <h3 class="section-title" style="font-size:24px;">YOU MAY ALSO LIKE</h3>
       <div class="scroll-row" id="related-products-row"></div>
+    </div>
+    <div id="product-reviews" style="padding:0 0 60px;display:none;">
+      <h3 class="section-title" style="font-size:24px;">CUSTOMER REVIEWS</h3>
+      <div id="product-reviews-content"></div>
     </div>
   </div>
 </div>
@@ -1490,7 +1544,12 @@ tr:hover td{background:var(--gray-100);}
     </div>
     <div class="admin-panel" style="margin-top:24px;">
       <h3>📞 Track Your Order</h3>
-      <p style="color:var(--gray-600);">For order tracking and delivery inquiries, please contact us via WhatsApp at <strong>09033992088</strong> or email <strong>olakunlep62@gmail.com</strong> with your order ID.</p>
+      <p style="color:var(--gray-600);margin-bottom:16px;">Enter your Order ID below to see real-time status updates.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input class="form-control" id="track-order-input" placeholder="e.g. ORD-1718000000000" style="flex:1;min-width:200px;">
+        <button class="btn btn-primary" onclick="trackOrderById()">Track Order</button>
+      </div>
+      <div id="track-order-result" style="margin-top:20px;"></div>
     </div>
   </div>
 </div>
@@ -1565,6 +1624,42 @@ tr:hover td{background:var(--gray-100);}
   </div>
 </div>
 
+<!-- ========== FAQ PAGE ========== -->
+<div class="page" id="page-faq">
+  <div class="about-hero"><div class="container"><h1>FREQUENTLY ASKED QUESTIONS</h1><p>Everything you need to know about ordering from Peterson.</p></div></div>
+  <div class="container" style="padding:60px 20px;max-width:800px;">
+    <div id="faq-list"><div class="spinner" style="margin:40px auto;"></div></div>
+  </div>
+</div>
+
+<!-- ========== RETURNS PAGE ========== -->
+<div class="page" id="page-returns">
+  <div class="about-hero"><div class="container"><h1>RETURN &amp; REFUND POLICY</h1><p>We want you to be 100% satisfied with every purchase.</p></div></div>
+  <div class="container" style="padding:60px 20px;max-width:760px;">
+    <div class="admin-panel"><h3>Return Policy</h3>
+      <p style="color:var(--gray-600);line-height:1.9;">We accept returns within <strong>7 days</strong> of delivery for jerseys in original, unworn condition with all tags attached. Palm oil products cannot be returned once delivered due to food safety regulations.</p>
+      <h3 style="margin-top:24px;">Refund Policy</h3>
+      <p style="color:var(--gray-600);line-height:1.9;">Approved refunds are processed within <strong>3–5 business days</strong> back to your original payment method. For bank transfers, refunds are made to the account provided during checkout. For Paystack payments, refunds are processed directly.</p>
+      <h3 style="margin-top:24px;">How to Request a Return</h3>
+      <ol style="color:var(--gray-600);line-height:2;padding-left:20px;">
+        <li>Contact us on WhatsApp at <strong>09033992088</strong> within 7 days of receiving your order.</li>
+        <li>Provide your Order ID and photos showing the issue.</li>
+        <li>We will confirm eligibility and arrange collection.</li>
+        <li>Once received and inspected, your refund will be processed.</li>
+      </ol>
+      <div style="margin-top:24px;"><a href="https://wa.me/2349033992088?text=Hi,%20I%20want%20to%20request%20a%20return" target="_blank" class="btn btn-primary">💬 Start a Return on WhatsApp</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TESTIMONIALS PAGE ========== -->
+<div class="page" id="page-testimonials">
+  <div class="about-hero"><div class="container"><h1>WHAT OUR CUSTOMERS SAY</h1><p>Real feedback from real customers across Nigeria.</p></div></div>
+  <div class="container" style="padding:60px 20px;">
+    <div id="testimonials-grid" class="review-grid"><div class="spinner" style="margin:40px auto;"></div></div>
+  </div>
+</div>
+
 <!-- ========== ADMIN PAGE ========== -->
 <div class="page" id="page-admin" style="padding-top:0;">
   <div class="admin-layout">
@@ -1606,6 +1701,9 @@ tr:hover td{background:var(--gray-100);}
           <a href="#" onclick="adminTab('payment-settings')" id="admin-tab-payment-settings">💳 Payment Settings</a>
           <a href="#" onclick="adminTab('paystack-settings')" id="admin-tab-paystack-settings">💳 Paystack Settings</a>
           <a href="#" onclick="adminTab('delivery-settings')" id="admin-tab-delivery-settings">🚚 Delivery &amp; Pickup</a>
+          <a href="#" onclick="adminTab('faq-admin')" id="admin-tab-faq-admin">❓ FAQ</a>
+          <a href="#" onclick="adminTab('testimonials-admin')" id="admin-tab-testimonials-admin">💬 Testimonials</a>
+          <a href="#" onclick="adminTab('trust-badges')" id="admin-tab-trust-badges">🛡️ Trust Badges</a>
         </div>
         <div class="admin-nav-section" style="margin-top:20px;">
           <a href="#" onclick="showPage('home')" style="color:rgba(255,255,255,0.4);">&larr; Back to Store</a>
@@ -1886,12 +1984,15 @@ function showPage(page,opts={}){
   if(page==='shop')renderShop();
   if(page==='jerseys')renderJerseys();
   if(page==='palmoil')renderPalmOil();
-  if(page==='home')renderFeatured();
+  if(page==='home'){renderFeatured();renderRecentlyViewed();}
   if(page==='checkout')renderCheckout();
   if(page==='gallery')loadGalleryPage();
   if(page==='account'){if(currentUser)renderAccount();else showPage('auth');}
   if(page==='admin'){if(isAdmin)adminTab('overview');else{showToast('Admin access required','error');showPage('home');}}
   if(page==='auth')renderAuth('login');
+  if(page==='faq')loadFaqPage();
+  if(page==='testimonials')loadTestimonialsPage();
+  if(page==='returns'){}// static page, no load needed
 }
 window.addEventListener('popstate',(e)=>{
   isHandlingPopState=true;
@@ -1993,11 +2094,14 @@ function showProductDetail(id,opts={}){
       <div class="stars">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</div>
       <span style="font-size:13px;color:var(--gray-400);">${p.reviews} reviews</span>
       <span class="badge ${p.stock>0?'badge-green':'badge-red'}" style="margin-left:8px;">${p.stock>0?'In Stock':'Out of Stock'}</span>
+      ${p.stock>0&&p.stock<=5?`<span class="badge badge-red" style="margin-left:4px;">Only ${p.stock} left!</span>`:''}
     </div>
+    <div class="social-proof-bar" id="social-proof-bar"></div>
     <div class="price">₦${p.price.toLocaleString()}${p.oldPrice?` <span style="font-size:16px;color:var(--gray-400);text-decoration:line-through;font-family:var(--font-body);font-weight:400;">₦${p.oldPrice.toLocaleString()}</span>`:''}</div>
     <div class="divider"></div>
     <p style="color:var(--gray-600);font-size:15px;line-height:1.8;margin-bottom:24px;">${p.desc}</p>
-    ${p.sizes?`<div class="size-selector"><h5>Select Size</h5><div class="size-options">${p.sizes.map(s=>`<button class="size-btn" onclick="selectSize('${s}',this)">${s}</button>`).join('')}</div></div>`:''}
+    ${p.colors&&p.colors.length?`<div class="color-selector"><h5>Select Color / Kit</h5><div class="color-options">${p.colors.map(c=>`<button class="color-btn" onclick="selectColor(this)" data-color="${c}">${c}</button>`).join('')}</div></div>`:''}
+    ${p.sizes?`<div class="size-selector"><h5>Select Size <button class="size-guide-btn" onclick="openSizeGuide()">📏 Size Guide</button></h5><div class="size-options">${p.sizes.map(s=>`<button class="size-btn" onclick="selectSize('${s}',this)">${s}</button>`).join('')}</div></div>`:''}
     <div class="qty-selector"><h5>Quantity</h5>
     <div class="qty-control">
       <button class="qty-btn" onclick="changeQty(-1)">−</button>
@@ -2007,15 +2111,148 @@ function showProductDetail(id,opts={}){
     <div class="product-actions">
       <button class="btn btn-primary" onclick="addProductToCart()">Add to Cart 🛒</button>
       <button class="btn ${p.cat==='jersey'?'btn-red':'btn-green'}" onclick="buyNow()">Buy Now &rarr;</button>
+      <button class="btn btn-whatsapp" onclick="shareOnWhatsApp('${escapeHtmlAttr(p.name)}',${p.price})">💬 Share</button>
+    </div>
+    <div class="shipping-calculator">
+      <h5>🚚 Estimate Delivery</h5>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <select class="form-control" id="ship-calc-state" style="flex:1;min-width:160px;" onchange="calcShipping()">
+          <option value="">Select state...</option>
+          ${NIGERIAN_STATES.map(s=>`<option value="${s}">${s}</option>`).join('')}
+        </select>
+        <div id="ship-calc-result" style="font-size:13px;font-weight:600;color:var(--palm-green);"></div>
+      </div>
     </div>
     <div class="product-meta">
       <div class="product-meta-item">🏷️ Category: ${p.subcat}</div>
       <div class="product-meta-item">📦 ${p.stock} units available</div>
       <div class="product-meta-item">✅ 100% Authentic</div>
       <div class="product-meta-item">🚚 Fast delivery across Nigeria</div>
+      <div class="product-meta-item"><a href="#product-reviews" style="color:var(--market-orange);font-weight:700;" onclick="document.getElementById('product-reviews').scrollIntoView({behavior:'smooth'})">⭐ Read all reviews &darr;</a></div>
     </div>`;
+  // Social proof: random viewer count for active products
+  if(p.stock>0){
+    const viewers=Math.floor(Math.random()*8)+3;
+    const el=document.getElementById('social-proof-bar');
+    if(el)el.innerHTML=`<span class="social-proof">👁️ ${viewers} people viewing this right now</span>`;
+  }
+  loadProductReviews(p.id);
   renderRelatedProducts(p);
   trackRecentlyViewed(p.id);
+}
+function shareOnWhatsApp(name,price){
+  const url=encodeURIComponent(window.location.href);
+  const msg=encodeURIComponent(`Check out ${name} for ₦${price.toLocaleString()} on Peterson — The Serial Entrepreneur! ${window.location.href}`);
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+async function calcShipping(){
+  const state=document.getElementById('ship-calc-state').value;
+  const res=document.getElementById('ship-calc-result');
+  if(!state){res.textContent='';return;}
+  res.textContent='Calculating...';
+  try{
+    const zones=await getDeliveryZones();
+    const fee=zones[state]?.fee||4500;
+    const days=state==='Lagos'?'1-2':(['Ogun','Oyo','Osun','Ondo','Ekiti'].includes(state)?'1-3':'3-5');
+    res.textContent=`₦${fee.toLocaleString()} · ${days} business days`;
+  }catch(e){res.textContent='Select delivery method at checkout';}
+}
+function selectColor(btn){
+  document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function openSizeGuide(){
+  const modal=document.createElement('div');
+  modal.className='modal-overlay';
+  modal.innerHTML=`<div class="modal-box">
+    <div class="modal-header"><h3>SIZE GUIDE</h3><button onclick="this.closest('.modal-overlay').remove()">✕</button></div>
+    <div class="modal-body">
+      <p style="color:var(--gray-600);margin-bottom:16px;">All sizes are in centimetres (cm). Measure your chest at the widest point for the best fit.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:var(--gray-100);">
+          <th style="padding:10px;text-align:left;border:1px solid var(--gray-200);">Size</th>
+          <th style="padding:10px;text-align:left;border:1px solid var(--gray-200);">Chest (cm)</th>
+          <th style="padding:10px;text-align:left;border:1px solid var(--gray-200);">Height (cm)</th>
+          <th style="padding:10px;text-align:left;border:1px solid var(--gray-200);">Weight (kg)</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:10px;border:1px solid var(--gray-200);">S</td><td style="padding:10px;border:1px solid var(--gray-200);">86–91</td><td style="padding:10px;border:1px solid var(--gray-200);">155–165</td><td style="padding:10px;border:1px solid var(--gray-200);">55–65</td></tr>
+          <tr style="background:var(--gray-100);"><td style="padding:10px;border:1px solid var(--gray-200);">M</td><td style="padding:10px;border:1px solid var(--gray-200);">91–97</td><td style="padding:10px;border:1px solid var(--gray-200);">165–175</td><td style="padding:10px;border:1px solid var(--gray-200);">65–75</td></tr>
+          <tr><td style="padding:10px;border:1px solid var(--gray-200);">L</td><td style="padding:10px;border:1px solid var(--gray-200);">97–104</td><td style="padding:10px;border:1px solid var(--gray-200);">175–182</td><td style="padding:10px;border:1px solid var(--gray-200);">75–85</td></tr>
+          <tr style="background:var(--gray-100);"><td style="padding:10px;border:1px solid var(--gray-200);">XL</td><td style="padding:10px;border:1px solid var(--gray-200);">104–111</td><td style="padding:10px;border:1px solid var(--gray-200);">182–188</td><td style="padding:10px;border:1px solid var(--gray-200);">85–95</td></tr>
+          <tr><td style="padding:10px;border:1px solid var(--gray-200);">XXL</td><td style="padding:10px;border:1px solid var(--gray-200);">111–119</td><td style="padding:10px;border:1px solid var(--gray-200);">188–194</td><td style="padding:10px;border:1px solid var(--gray-200);">95–110</td></tr>
+        </tbody>
+      </table>
+      <p style="color:var(--gray-400);font-size:12px;margin-top:12px;">If you are between sizes, we recommend sizing up for a more comfortable fit.</p>
+    </div>
+  </div>`;
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+  document.body.appendChild(modal);
+}
+async function loadProductReviews(productId){
+  const section=document.getElementById('product-reviews');
+  const content=document.getElementById('product-reviews-content');
+  if(!section||!content)return;
+  try{
+    const snap=await db.collection('reviews').where('productId','==',productId).where('approved','==',true).orderBy('createdAt','desc').get();
+    const reviews=snap.docs.map(d=>d.data());
+    const canReview=currentUser&&!reviews.find(r=>r.userId===currentUser.uid);
+    content.innerHTML=`
+      ${canReview?`<div class="review-form">
+        <h4 style="margin-bottom:16px;">Leave a Review</h4>
+        <div style="display:flex;gap:8px;margin-bottom:12px;" id="review-stars-input">
+          ${[1,2,3,4,5].map(i=>`<button class="star-btn" data-val="${i}" onclick="setReviewStar(${i})">☆</button>`).join('')}
+        </div>
+        <textarea class="form-control" id="review-text" placeholder="Share your experience with this product..." rows="3" style="margin-bottom:12px;"></textarea>
+        <button class="btn btn-primary btn-sm" onclick="submitReview('${productId}')">Submit Review</button>
+      </div><div class="divider"></div>`:''}
+      <div class="reviews-list">
+        ${reviews.length?reviews.map(r=>`<div class="review-item">
+          <div class="review-header">
+            <span class="review-author">${r.customerName||'Customer'}</span>
+            <span class="stars" style="font-size:13px;">${'★'.repeat(r.rating||0)}${'☆'.repeat(5-(r.rating||0))}</span>
+            <span style="font-size:11px;color:var(--gray-400);">${r.createdAt?.toDate?.()?.toLocaleDateString()||''}</span>
+          </div>
+          <p class="review-text">${r.comment||''}</p>
+        </div>`).join(''):`<div style="padding:24px;text-align:center;color:var(--gray-400);">No reviews yet. Be the first to review this product!</div>`}
+      </div>`;
+    section.style.display='block';
+  }catch(e){section.style.display='none';}
+}
+let reviewRating=0;
+function setReviewStar(val){
+  reviewRating=val;
+  document.querySelectorAll('.star-btn').forEach((b,i)=>{b.textContent=i<val?'★':'☆';b.classList.toggle('active',i<val);});
+}
+async function submitReview(productId){
+  if(!currentUser){showToast('Please sign in to leave a review','error');return;}
+  if(!reviewRating){showToast('Please select a star rating','error');return;}
+  const comment=document.getElementById('review-text').value.trim();
+  try{
+    await db.collection('reviews').add({
+      productId,productName:currentProduct?.name||'',
+      userId:currentUser.uid,customerName:currentUser.displayName||'Customer',
+      rating:reviewRating,comment,approved:false,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast('Review submitted! It will appear after approval.','success');
+    loadProductReviews(productId);
+  }catch(e){showToast('Could not submit review','error');}
+}
+function renderRecentlyViewed(){
+  const section=document.getElementById('recently-viewed-section');
+  const row=document.getElementById('recently-viewed-row');
+  if(!section||!row)return;
+  const recent=JSON.parse(localStorage.getItem('peterson_recently_viewed')||'[]');
+  const products=recent.map(id=>getProducts().find(p=>p.id===id)).filter(Boolean).slice(0,10);
+  if(!products.length){section.classList.add('hidden');return;}
+  row.innerHTML=products.map(p=>createProductCard(p)).join('');
+  section.classList.remove('hidden');
+}
+function clearRecentlyViewed(){
+  localStorage.removeItem('peterson_recently_viewed');
+  const section=document.getElementById('recently-viewed-section');
+  if(section)section.classList.add('hidden');
 }
 function trackRecentlyViewed(productId){
   try{
@@ -2436,13 +2673,19 @@ auth.onAuthStateChanged(async user=>{
     if(mobileAdminLink)mobileAdminLink.classList.toggle('hidden',!isAdmin);
     await loadWishlistIds();
     if(isAdmin){
-      // Add admin link to navbar
       let adminLink=document.getElementById('nav-admin');
       if(!adminLink){
         const navLinks=document.querySelector('.category-strip-inner');
-        if(navLinks){const a=document.createElement('a');a.href='#';a.id='nav-admin';a.style.color='var(--market-orange)';a.style.fontWeight='700';a.textContent='\u{1F527} Admin Panel';a.onclick=()=>showPage('admin');navLinks.appendChild(a);}
+        if(navLinks){
+          const a=document.createElement('a');a.href='#';a.id='nav-admin';
+          a.style.color='var(--market-orange)';a.style.fontWeight='700';a.style.position='relative';
+          a.innerHTML='\u{1F527} Admin Panel<span id="admin-order-badge" class="hidden" style="position:absolute;top:-4px;right:-6px;background:var(--jersey-red);color:white;font-size:10px;font-weight:700;padding:2px 5px;border-radius:10px;min-width:16px;text-align:center;"></span>';
+          a.onclick=()=>{showPage('admin');markOrdersSeen();};
+          navLinks.appendChild(a);
+        }
       }
       refreshResetRequestBadge();
+      startOrderNotifications();
     }
   }else{
     currentUser=null;isAdmin=false;wishlistIds=[];
@@ -2523,18 +2766,62 @@ async function loadUserOrderStats(){
   }
 }
 async function loadUserOrders(){
+  const list=document.getElementById('user-orders-list');
   try{
     const snap=await db.collection('orders').where('userId','==',currentUser.uid).orderBy('createdAt','desc').get();
-    const list=document.getElementById('user-orders-list');
     if(snap.empty){list.innerHTML=renderEmptyState('📦','No orders yet','Once you place an order, it will show up here so you can track it.','Start Shopping','shop');return;}
     list.innerHTML=snap.docs.map(doc=>{
       const o=doc.data();
-      return `<div class="order-row">
-        <div style="flex:1;"><strong>${o.orderId}</strong><br><span style="font-size:12px;color:var(--gray-400);">${o.items?.length||0} items &bull; ₦${(o.total||0).toLocaleString()}</span></div>
-        <span class="order-status status-${o.status}">${o.status}</span>
+      const steps=['pending','processing','shipped','delivered'];
+      const idx=Math.max(0,steps.indexOf(o.status));
+      return `<div class="order-card">
+        <div class="order-card-header">
+          <div><strong>${o.orderId}</strong><span style="margin-left:10px;font-size:12px;color:var(--gray-400);">${o.createdAt?.toDate?.()?.toLocaleDateString('en-NG')||''}</span></div>
+          <span class="order-status status-${o.status}">${o.status}</span>
+        </div>
+        <div class="order-timeline">
+          ${steps.map((step,i)=>`<div class="order-step ${i<=idx?'done':''}"><div class="order-step-dot"></div><div class="order-step-label">${step}</div></div>`).join('<div class="order-step-line"></div>')}
+        </div>
+        <div style="font-size:13px;color:var(--gray-600);margin-bottom:10px;">
+          ${o.items?.map(i=>`${i.name} x${i.qty}`).join(', ')||''}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;flex-wrap:wrap;gap:8px;">
+          <span>📍 ${o.delivery?.method==='pickup'?o.delivery.pickupStation||'Pickup':o.delivery?.state||o.customer?.state||'-'}</span>
+          <strong>₦${(o.total||0).toLocaleString()}</strong>
+        </div>
+        <div style="margin-top:12px;">
+          <a href="https://wa.me/2349033992088?text=${encodeURIComponent('Hi, I need help with order '+o.orderId)}" target="_blank" class="btn btn-sm btn-outline" style="font-size:12px;">💬 Ask About This Order</a>
+        </div>
       </div>`;
     }).join('');
-  }catch(e){document.getElementById('user-orders-list').innerHTML='<p style="color:var(--gray-400);">Could not load orders.</p>';}
+  }catch(e){list.innerHTML='<p style="color:var(--gray-400);">Could not load orders.</p>';}
+}
+async function trackOrderById(){
+  const orderId=document.getElementById('track-order-input').value.trim();
+  const result=document.getElementById('track-order-result');
+  if(!orderId){showToast('Enter your Order ID','error');return;}
+  result.innerHTML='<div class="spinner" style="margin:0 auto;"></div>';
+  try{
+    const snap=await db.collection('orders').where('orderId','==',orderId).limit(1).get();
+    if(snap.empty){result.innerHTML=renderEmptyState('🔍','Order not found','Double-check your Order ID. It was sent in your confirmation message.','','');return;}
+    const o=snap.docs[0].data();
+    const steps=['pending','processing','shipped','delivered'];
+    const idx=Math.max(0,steps.indexOf(o.status));
+    result.innerHTML=`<div class="order-card">
+      <div class="order-card-header">
+        <div><strong>${o.orderId}</strong></div>
+        <span class="order-status status-${o.status}">${o.status}</span>
+      </div>
+      <div class="order-timeline">
+        ${steps.map((step,i)=>`<div class="order-step ${i<=idx?'done':''}"><div class="order-step-dot"></div><div class="order-step-label">${step}</div></div>`).join('<div class="order-step-line"></div>')}
+      </div>
+      <div style="font-size:13px;color:var(--gray-600);">
+        <p><strong>Customer:</strong> ${o.customer?.name||'-'}</p>
+        <p><strong>Delivery:</strong> ${o.delivery?.method==='pickup'?'Pickup at '+o.delivery?.pickupStation:'Home delivery to '+o.delivery?.state}</p>
+        <p><strong>Total:</strong> ₦${(o.total||0).toLocaleString()}</p>
+      </div>
+    </div>`;
+  }catch(e){result.innerHTML='<p style="color:var(--gray-400);">Could not fetch order. Check your connection.</p>';}
 }
 async function updateProfile(){
   const name=document.getElementById('profile-name').value.trim();
@@ -2551,7 +2838,7 @@ function adminTab(tab){
   document.querySelectorAll('.admin-nav a').forEach(a=>{a.classList.remove('active');});
   const el=document.getElementById('admin-tab-'+tab);
   if(el)el.classList.add('active');
-  const titles={overview:'Dashboard',analytics:'Analytics',products:'All Products','add-product':'Add Product','bulk-import':'Bulk Import',banners:'Banners',gallery:'Gallery Videos',orders:'All Orders',coupons:'Coupons','flash-sale':'Flash Sale',reviews:'Reviews',customers:'Users',chats:'Chats','manage-admins':'Manage Admins','reset-requests':'Reset Requests','payment-settings':'Payment Settings','paystack-settings':'Paystack Settings','delivery-settings':'Delivery & Pickup'};
+  const titles={overview:'Dashboard',analytics:'Analytics',products:'All Products','add-product':'Add Product','bulk-import':'Bulk Import',banners:'Banners',gallery:'Gallery Videos',orders:'All Orders',coupons:'Coupons','flash-sale':'Flash Sale',reviews:'Reviews',customers:'Users',chats:'Chats','manage-admins':'Manage Admins','reset-requests':'Reset Requests','payment-settings':'Payment Settings','paystack-settings':'Paystack Settings','delivery-settings':'Delivery & Pickup','faq-admin':'FAQ','testimonials-admin':'Testimonials','trust-badges':'Trust Badges'};
   document.getElementById('admin-topbar-title').textContent=titles[tab]||tab;
   const content=document.getElementById('admin-content');
   if(tab==='overview')renderAdminOverview(content);
@@ -2569,6 +2856,9 @@ function adminTab(tab){
   else if(tab==='payment-settings')renderAdminPaymentSettings(content);
   else if(tab==='paystack-settings')renderAdminPaystackSettings(content);
   else if(tab==='delivery-settings')renderAdminDeliverySettings(content);
+  else if(tab==='faq-admin')renderAdminFaq(content);
+  else if(tab==='testimonials-admin')renderAdminTestimonials(content);
+  else if(tab==='trust-badges')renderAdminTrustBadges(content);
   else if(tab==='coupons')renderAdminCoupons(content);
   else if(tab==='flash-sale')renderAdminFlashSale(content);
   else if(tab==='reviews')renderAdminReviews(content);
@@ -3658,6 +3948,180 @@ async function removePickupStation(state,index){
   }catch(e){showToast('Could not remove station: '+(e.message||''),'error');}
 }
 
+// ===== FAQ =====
+async function renderAdminFaq(el){
+  el.innerHTML=`<div class="admin-panel"><h3>ADD FAQ</h3>
+    <div class="form-group"><label class="form-label">Question</label><input class="form-control" id="faq-q" placeholder="e.g. How long does delivery take?"></div>
+    <div class="form-group"><label class="form-label">Answer</label><textarea class="form-control" id="faq-a" rows="3" placeholder="Your answer..."></textarea></div>
+    <button class="btn btn-primary" onclick="addFaq()">Add FAQ</button>
+  </div>
+  <div class="admin-table-wrap" style="margin-top:24px;"><div class="admin-table-header"><h4>Current FAQs</h4></div><div id="faq-admin-list"><div class="spinner" style="margin:20px auto;"></div></div></div>`;
+  loadFaqAdminList();
+}
+async function addFaq(){
+  const q=document.getElementById('faq-q').value.trim();
+  const a=document.getElementById('faq-a').value.trim();
+  if(!q||!a){showToast('Fill both fields','error');return;}
+  try{await db.collection('faqs').add({q,a,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('FAQ added!','success');adminTab('faq-admin');}
+  catch(e){showToast('Could not save','error');}
+}
+async function loadFaqAdminList(){
+  const wrap=document.getElementById('faq-admin-list');
+  try{
+    const snap=await db.collection('faqs').orderBy('createdAt').get();
+    const items=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    wrap.innerHTML=items.length?items.map(f=>`<div style="padding:14px;border-bottom:1px solid var(--gray-100);">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;">
+        <div><strong>${f.q}</strong><p style="color:var(--gray-600);font-size:13px;margin-top:4px;">${f.a}</p></div>
+        <button class="btn btn-sm btn-red" onclick="deleteFaq('${f.docId}')">Delete</button>
+      </div></div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--gray-400);">No FAQs yet</div>';
+  }catch(e){wrap.innerHTML='<p style="color:var(--gray-400);padding:16px;">Could not load</p>';}
+}
+async function deleteFaq(docId){if(!confirm('Delete?'))return;try{await db.collection('faqs').doc(docId).delete();showToast('Deleted','info');loadFaqAdminList();}catch(e){showToast('Failed','error');}}
+async function loadFaqPage(){
+  const list=document.getElementById('faq-list');
+  if(!list)return;
+  try{
+    const snap=await db.collection('faqs').orderBy('createdAt').get();
+    const items=snap.docs.map(d=>d.data());
+    list.innerHTML=items.length?items.map((f,i)=>`<div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(${i})"><span>${f.q}</span><span class="faq-icon" id="faq-icon-${i}">+</span></button>
+      <div class="faq-answer hidden" id="faq-answer-${i}">${f.a}</div>
+    </div>`).join(''):renderEmptyState('❓','No FAQs yet','Check back soon for answers to common questions.','','');
+  }catch(e){list.innerHTML='<p style="color:var(--gray-400);">Could not load FAQs</p>';}
+}
+function toggleFaq(i){
+  const answer=document.getElementById('faq-answer-'+i);
+  const icon=document.getElementById('faq-icon-'+i);
+  const isOpen=!answer.classList.contains('hidden');
+  document.querySelectorAll('.faq-answer').forEach(a=>a.classList.add('hidden'));
+  document.querySelectorAll('.faq-icon').forEach(ic=>ic.textContent='+');
+  if(!isOpen){answer.classList.remove('hidden');icon.textContent='−';}
+}
+
+// ===== TESTIMONIALS =====
+async function renderAdminTestimonials(el){
+  el.innerHTML=`<div class="admin-panel"><h3>ADD TESTIMONIAL</h3>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Customer Name</label><input class="form-control" id="testi-name" placeholder="e.g. Chidi Okeke, Lagos"></div>
+      <div class="form-group"><label class="form-label">Rating (1–5)</label><input class="form-control" type="number" id="testi-rating" min="1" max="5" value="5"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Avatar Image URL (optional)</label><input class="form-control" id="testi-avatar" placeholder="https://i.ibb.co/..."></div>
+    <div class="form-group"><label class="form-label">Testimonial Text</label><textarea class="form-control" id="testi-text" rows="3" placeholder="What did they say?"></textarea></div>
+    <button class="btn btn-primary" onclick="addTestimonial()">Add Testimonial</button>
+  </div>
+  <div class="admin-table-wrap" style="margin-top:24px;"><div class="admin-table-header"><h4>Current Testimonials</h4></div><div id="testi-admin-list"><div class="spinner" style="margin:20px auto;"></div></div></div>`;
+  loadTestimonialsAdminList();
+}
+async function addTestimonial(){
+  const name=document.getElementById('testi-name').value.trim();
+  const text=document.getElementById('testi-text').value.trim();
+  const rating=parseInt(document.getElementById('testi-rating').value)||5;
+  const avatar=document.getElementById('testi-avatar').value.trim();
+  if(!name||!text){showToast('Fill name and text','error');return;}
+  try{await db.collection('testimonials').add({name,text,rating,avatar,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Testimonial added!','success');adminTab('testimonials-admin');}
+  catch(e){showToast('Could not save','error');}
+}
+async function loadTestimonialsAdminList(){
+  const wrap=document.getElementById('testi-admin-list');
+  try{
+    const snap=await db.collection('testimonials').orderBy('createdAt','desc').get();
+    const items=snap.docs.map(d=>({...d.data(),docId:d.id}));
+    wrap.innerHTML=items.length?items.map(t=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--gray-100);gap:10px;">
+      <div><strong>${t.name}</strong> ${'★'.repeat(t.rating||0)}<p style="color:var(--gray-600);font-size:13px;margin-top:4px;">"${(t.text||'').slice(0,80)}..."</p></div>
+      <button class="btn btn-sm btn-red" onclick="deleteTestimonial('${t.docId}')">Delete</button></div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--gray-400);">No testimonials yet</div>';
+  }catch(e){wrap.innerHTML='<p style="color:var(--gray-400);padding:16px;">Could not load</p>';}
+}
+async function deleteTestimonial(docId){if(!confirm('Delete?'))return;try{await db.collection('testimonials').doc(docId).delete();showToast('Deleted','info');loadTestimonialsAdminList();}catch(e){showToast('Failed','error');}}
+async function loadTestimonialsPage(){
+  const grid=document.getElementById('testimonials-grid');
+  if(!grid)return;
+  try{
+    const snap=await db.collection('testimonials').orderBy('createdAt','desc').get();
+    const items=snap.docs.map(d=>d.data());
+    grid.innerHTML=items.length?items.map(t=>`<div class="review-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        ${t.avatar?`<img src="${t.avatar}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`:'<div style="width:44px;height:44px;border-radius:50%;background:var(--market-orange);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px;">'+(t.name||'?')[0]+'</div>'}
+        <div><strong>${t.name}</strong><div class="stars" style="font-size:13px;">${'★'.repeat(t.rating||5)}</div></div>
+      </div>
+      <p style="color:var(--gray-600);font-size:14px;line-height:1.7;">"${t.text}"</p>
+    </div>`).join(''):renderEmptyState('💬','No testimonials yet','Check back soon!','','');
+  }catch(e){grid.innerHTML='<p style="color:var(--gray-400);">Could not load</p>';}
+}
+
+// ===== TRUST BADGES =====
+const DEFAULT_TRUST_BADGES=[
+  {icon:'✅',label:'100% Authentic'},
+  {icon:'🚚',label:'Nationwide Delivery'},
+  {icon:'🔒',label:'Secure Checkout'},
+  {icon:'⭐',label:'2,000+ Happy Customers'},
+  {icon:'💳',label:'Multiple Payment Options'},
+  {icon:'↩️',label:'7-Day Returns'}
+];
+async function renderAdminTrustBadges(el){
+  let badges=DEFAULT_TRUST_BADGES;
+  try{const snap=await db.collection('settings').doc('trustBadges').get();if(snap.exists&&snap.data().badges)badges=snap.data().badges;}catch(e){}
+  el.innerHTML=`<div class="admin-panel"><h3>TRUST BADGES</h3>
+    <p class="form-text" style="margin-bottom:16px;">These appear in the footer and on the homepage. Edit any badge icon or label, or reset to defaults.</p>
+    <div id="trust-badges-editor">
+      ${badges.map((b,i)=>`<div style="display:flex;gap:10px;margin-bottom:10px;">
+        <input class="form-control" style="max-width:70px;" id="tb-icon-${i}" value="${b.icon}" placeholder="✅">
+        <input class="form-control" id="tb-label-${i}" value="${b.label}" placeholder="Label">
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:12px;margin-top:16px;">
+      <button class="btn btn-primary" onclick="saveTrustBadges(${badges.length})">Save Badges</button>
+      <button class="btn btn-outline" onclick="adminTab('trust-badges')">Reset to Defaults</button>
+    </div>
+  </div>`;
+}
+async function saveTrustBadges(count){
+  const badges=[];
+  for(let i=0;i<count;i++){
+    const icon=document.getElementById('tb-icon-'+i)?.value.trim()||'';
+    const label=document.getElementById('tb-label-'+i)?.value.trim()||'';
+    if(label)badges.push({icon,label});
+  }
+  try{
+    await db.collection('settings').doc('trustBadges').set({badges,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Trust badges saved!','success');
+    loadTrustBadges();
+  }catch(e){showToast('Could not save','error');}
+}
+async function loadTrustBadges(){
+  try{
+    const snap=await db.collection('settings').doc('trustBadges').get();
+    const badges=(snap.exists&&snap.data().badges)?snap.data().badges:DEFAULT_TRUST_BADGES;
+    const strip=document.getElementById('trust-strip-inner');
+    if(strip){strip.innerHTML=badges.map(b=>`<div class="trust-strip-item"><span>${b.icon}</span>${b.label}</div>`).join('');}
+  }catch(e){}
+}
+
+// ===== ADMIN NEW ORDER NOTIFICATION =====
+let orderNotifUnsubscribe=null;
+function startOrderNotifications(){
+  if(!isAdmin||orderNotifUnsubscribe)return;
+  const seenKey='peterson_seen_orders';
+  let seen=new Set(JSON.parse(localStorage.getItem(seenKey)||'[]'));
+  try{
+    orderNotifUnsubscribe=db.collection('orders').orderBy('createdAt','desc').limit(20).onSnapshot(snap=>{
+      let newCount=0;
+      snap.docs.forEach(doc=>{if(!seen.has(doc.id)){newCount++;}});
+      const badge=document.getElementById('admin-order-badge');
+      if(badge){badge.textContent=newCount>0?newCount:'';badge.classList.toggle('hidden',newCount===0);}
+    });
+  }catch(e){}
+}
+function markOrdersSeen(){
+  const seenKey='peterson_seen_orders';
+  db.collection('orders').orderBy('createdAt','desc').limit(20).get().then(snap=>{
+    const ids=snap.docs.map(d=>d.id);
+    localStorage.setItem(seenKey,JSON.stringify(ids));
+    const badge=document.getElementById('admin-order-badge');
+    if(badge){badge.textContent='';badge.classList.add('hidden');}
+  }).catch(()=>{});
+}
+
 // ===== MISC =====
 function subscribeNewsletter(){
   const email=document.getElementById('newsletter-email').value.trim();
@@ -3792,6 +4256,7 @@ async function loadFirestoreProducts(){
   renderFeatured();
   renderJerseys();
   renderPalmOil();
+  renderRecentlyViewed();
   if(document.getElementById('page-shop').classList.contains('active'))filterProducts();
 }
 
@@ -3876,6 +4341,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadHomeGalleryTeaser();
   loadPromoTileImages();
   loadHeroSlideImages();
+  loadTrustBadges();
   history.replaceState({page:'home',productId:null},'','#home');
 });
 
